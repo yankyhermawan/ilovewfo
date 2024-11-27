@@ -1,10 +1,8 @@
 import { PrismaService } from '../prisma.service'
 import { FindUser } from './user.interface'
-import { Response } from '../../utility/response.interface'
+import { ResponseInterface } from '../utility/response'
 import { StatusCodes } from 'http-status-codes'
 import isEmpty from 'lodash/isEmpty'
-import map from 'lodash/map'
-import omit from 'lodash/omit'
 
 export default class UserService {
     private readonly prismaService: PrismaService
@@ -13,8 +11,11 @@ export default class UserService {
         this.prismaService = new PrismaService()
     }
 
-    async getUsers(data: FindUser): Promise<Response> {
+    async getUsers(data: FindUser): Promise<ResponseInterface> {
         const response = await this.prismaService.user.findMany({
+            omit: {
+                password: true
+            },
             where: {
                 ...data
             }
@@ -25,10 +26,26 @@ export default class UserService {
                 errorMessage: 'No Users Found'
             }
         }
-        const result = map(response, res => ({...omit(res, 'password')}))
         return {
             status: StatusCodes.OK,
-            data: result
+            data: response
+        }
+    }
+
+    async getUser(data: FindUser): Promise<ResponseInterface> {
+        const response = await this.prismaService.user.findFirst({
+            omit: { password: true },
+            where: { ...data }
+        })
+        if (isEmpty(response)) {
+            return {
+                status: StatusCodes.NOT_FOUND,
+                errorMessage: 'User Not Found'
+            }
+        }
+        return {
+            status: StatusCodes.OK,
+            data: response
         }
     }
 }

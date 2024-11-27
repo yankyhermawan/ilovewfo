@@ -1,0 +1,43 @@
+POST http://localhost:3000/user/register
+Content-Type: application/json
+
+{
+    "username": "yanky",
+    "name": "yanky",
+    "password": "abc123",
+    "position": "CEO"
+}
+#### LOGIN ####
+POST http://localhost:3000/user/login
+Content-Type: application/json
+
+{
+    "username": "yanky",
+    "password": "abc123"
+}
+
+#### REFRESH ####
+GET http://localhost:3000/user
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJ5YW5reSIsImlhdCI6MTczMjc0MTcwMywiZXhwIjoxNzMyODI4MTAzfQ.Tu_4_7td8dfCFfsm5Xga-TkPBiHr-MYWahaYxkXR0cs
+Content-Type: application/json
+
+### GET ALL USER ###
+GET http://localhost:3000/user/all
+
+### GENERATE OTP ###
+POST http://localhost:3000/user/otp
+Content-Type: application/json
+
+{
+    "username": "yanky"
+}
+
+### CHANGE PASSWORD ###
+POST http://localhost:3000/user/forgetpassword
+Content-Type: application/json
+
+{
+    "username": "yanky",
+    "otp_number": 738720,
+    "new_password": "abcd1234"
+}

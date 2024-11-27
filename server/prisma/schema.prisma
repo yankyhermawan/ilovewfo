@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["omitApi"]
 }
 
 datasource db {
@@ -13,9 +14,82 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model user {
   id Int @id @default(autoincrement())
   username String @unique
+  email String @unique
   password String
   name String
+  position Position?
+  user_character user_character[]
+  otp otp[]
+  company_id Int?
+  company company? @relation(fields: [company_id], references: [id])
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model character {
+  id Int @id @default(autoincrement())
+  name String
+  image String
+  user_character user_character[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model user_character {
+  id Int @id @default(autoincrement())
+  user_id Int
+  user user @relation(fields: [user_id], references: [id])
+  character_id Int
+  character character @relation(fields: [character_id], references: [id])
+}
+
+model company {
+  id Int @id @default(autoincrement())
+  name String
+  company_material company_material[]
+  user user[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model material {
+  id Int @id @default(autoincrement())
+  name String
+  image String
+  company_material company_material[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model company_material {
+  id Int @id @default(autoincrement())
+  company_id Int
+  company company @relation(fields: [company_id], references: [id])
+  material_id Int
+  material material @relation(fields: [material_id], references: [id])
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model otp {
+  id Int @id @default(autoincrement())
+  user_id Int
+  user user @relation(fields: [user_id], references: [id])
+  otp_number Int
+  valid_until DateTime
+  is_valid Int @default(0)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+enum Position {
+  CEO
+  CTO
+  Manager
+  HR
+  Staff
+  Guest
 }
