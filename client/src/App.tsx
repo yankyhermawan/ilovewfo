@@ -2,17 +2,11 @@ import { useState, useEffect } from 'react'
 import './output.css'
 import person from './assets/person-solid.svg'
 import table from './assets/table.jpg'
+import isEmpty from 'lodash/isEmpty'
+import filter from 'lodash/filter'
+import isEqual from 'lodash/isEqual'
 
-const dummyMap = [
-	[1, 1, 1, 1, 1, 1, 1, 1],
-	[1, 1, 1, 1, 1, 1, 1, 1],
-	[1, 1, 1, 0, 1, 1, 1, 1],
-	[1, 1, 1, 1, 1, 1, 1, 1],
-	[1, 1, 1, 1, 1, 1, 1, 1],
-	[1, 1, 1, 1, 1, 1, 1, 1],
-	[1, 1, 1, 1, 1, 1, 1, 1],
-	[1, 1, 1, 1, 1, 1, 1, 1]
-]
+const dummyMap = [8, 8]
 
 const properties = [
 	{
@@ -22,7 +16,8 @@ const properties = [
 		rotation: 0,
 		width: 1,
 		height: 1,
-		src: table
+		src: table,
+		walkable: false
 	},
 	{
 		id: 1,
@@ -31,66 +26,89 @@ const properties = [
 		rotation: 0,
 		width: 1,
 		height: 1,
-		src: table
+		src: table,
+		walkable: false
 	}
 ]
 
 
 function App() {
-	const [currentPosition, setCurrentPosition] = useState([1, 1])
+	const [currentPosition, setCurrentPosition] = useState<number[]>([1, 1])
+	const [rotation, setRotation] = useState<number>(0)
+	const isAbleToMove = (nextPosition: number[]) => {
+		return isEmpty(filter(properties, dt => isEqual(dt.position, nextPosition) && !dt.walkable))
+	}
 
-	const eventListener = (dir = '') => {
+	const walk = (dir = '') => {
 		if (dir === 'up') {
-			if (currentPosition[0] - 1 >= 0 && dummyMap[currentPosition[0] - 1][currentPosition[1]]) {
-				setCurrentPosition([currentPosition[0] - 1, currentPosition[1]])
+			const nextPosition = [currentPosition[0], currentPosition[1] - 1]
+			if (nextPosition[1] >= 0
+				&& isAbleToMove(nextPosition)
+			) {
+				console.log(nextPosition)
+				setCurrentPosition(nextPosition)
 			}
 		}
 		if (dir === 'down') {
-			if (currentPosition[0] + 1 <= dummyMap.length && dummyMap[currentPosition[0] + 1][currentPosition[1]]) {
-				setCurrentPosition([currentPosition[0] + 1, currentPosition[1]])
+			const nextPosition = [currentPosition[0], currentPosition[1] + 1]
+			if (currentPosition[1] + 1 < dummyMap[1]
+				&& isAbleToMove(nextPosition)
+			) {
+				console.log(nextPosition)
+				setCurrentPosition(nextPosition)
 			}
 		}
 		if (dir === 'left') {
-			if (dummyMap[currentPosition[0]][currentPosition[1] - 1] && currentPosition[1] - 1 >= 0) {
-				setCurrentPosition([currentPosition[0], currentPosition[1] - 1])
+			const nextPosition = [currentPosition[0] - 1, currentPosition[1]]
+			if (currentPosition[0] - 1 >= 0
+				&& isAbleToMove(nextPosition)
+			) {
+				console.log(nextPosition)
+				setCurrentPosition(nextPosition)
 			}
 		}
 		if (dir === 'right') {
-			if (dummyMap[currentPosition[0]][currentPosition[1] + 1] && currentPosition[1] + 1 <= dummyMap[currentPosition[1]].length) {
-				setCurrentPosition([currentPosition[0], currentPosition[1] + 1])
+			const nextPosition = [currentPosition[0] + 1, currentPosition[1]]
+			if (nextPosition[0] < dummyMap[0]
+				&& isAbleToMove(nextPosition)
+			) {
+				console.log(nextPosition)
+				setCurrentPosition(nextPosition)
 			}
 		}
 	}
 
 	const renderSquare = () => {
-		return dummyMap.map((dt, i) => {
+		const renderResult = []
+		for (let i = 0; i < dummyMap[0]; i ++) {
 			const res = []
-			for (let j = 0; j <= dt.length; j++) {
+			for (let j = 0; j < dummyMap[1]; j ++) {
 				const name = (i+j) % 2 === 0 ? 'bg-red-400' : 'bg-blue-400'
-				const img = i === currentPosition[0] && j === currentPosition[1] ? <img src={person} width={24} height={24}/> : <></>
+				const img = i === currentPosition[1] && j === currentPosition[0] ? <img src={person} width={24} height={24}/> : <></>
 				res.push(
-					<div className={`flex ${name} w-16 h-16 justify-center`}>
+					<div className={`flex ${name} w-16 h-16 justify-center`} key={`${i}-${j}`}>
 						{img}
 					</div>
-				) 
+				)
 			}
-			return (
-				<div className='flex flex-row'>
+			renderResult.push(
+				<div className='flex flex-row' key={`${i}`}>
 					{res}
 				</div>
 			)
-		})
+		}
+		return renderResult
 	}
 
 	const renderProperties = () => {
-		return properties.map(prop => {
+		return properties.map((prop, key) => {
 			const offsetX = prop.position[0] * 64
 			const offsetY = prop.position[1] * 64
 			const width = prop.width * 64
 			const height = prop.height * 64
 
 			return (
-				<div className='absolute' style={{ marginLeft: `${offsetX}px`, marginTop: `${offsetY}px` }}>
+				<div className='absolute' key={key} style={{ marginLeft: `${offsetX}px`, marginTop: `${offsetY}px` }}>
 					<img src={prop.src} width={width} height={height} />
 				</div>
 			)
@@ -98,37 +116,55 @@ function App() {
 	}
 
 	useEffect(() => {
+		let timeoutId: number | null = null
 		const handleKeyDown = (e: KeyboardEvent): void => {
-			if (e.code === 'KeyW' || e.code === 'ArrowUp') {
+			const keyAction = {
+				KeyW: 'up',
+				ArrowUp: 'up',
+				KeyA: 'left',
+				ArrowLeft: 'left',
+				KeyS: 'down',
+				ArrowDown: 'down',
+				KeyD: 'right',
+				ArrowRight: 'right'
+			}
+			const rotation = {
+				right: 0,
+				up: 90,
+				left: 180,
+				down: 270
+			}
+			const key = e.code
+			if (key in keyAction) {
 				e.preventDefault()
-				eventListener('up')
+				const direction = keyAction[key as keyof typeof keyAction]
+				setRotation(rotation[direction as keyof typeof rotation])
+				timeoutId = setTimeout(() => {
+					walk(direction)
+				}, 50, 'abc')
+			}
 		}
-			if (e.code === 'KeyA' || e.code === 'ArrowLeft') {
-				e.preventDefault()
-				eventListener('left')
+
+		const handleKeyUp = (): void => {
+			if (timeoutId) {
+				clearTimeout(timeoutId)
+				timeoutId = null
 			}
-			if (e.code === 'KeyS' || e.code === 'ArrowDown') {
-				e.preventDefault()
-				eventListener('down')
-			}
-			if (e.code === 'KeyD' || e.code === 'ArrowRight') {
-				e.preventDefault()
-				eventListener('right')
-			}
-		};
+		}
 	  
-		window.addEventListener('keydown', handleKeyDown);
+		window.addEventListener('keydown', handleKeyDown)
+		window.addEventListener('keyup', handleKeyUp)
 		return () => {
-		  window.removeEventListener('keydown', handleKeyDown);
+			window.removeEventListener('keydown', handleKeyDown)
+			window.removeEventListener('keyup', handleKeyUp)
 		};
-	  }, [currentPosition]);
-	  
+	}, [currentPosition])	  
 
 	return (
-	<div className='flex flex-col'>
-		{renderSquare()}
-		{renderProperties()}
-	</div>
+		<div className='flex flex-col'>
+			{renderSquare()}
+			{renderProperties()}
+		</div>
 	)
 }
 
