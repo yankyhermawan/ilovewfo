@@ -41,3 +41,19 @@ Content-Type: application/json
     "otp_number": 738720,
     "new_password": "abcd1234"
 }
+
+############################### COMPANY #############################
+POST http://localhost:3000/company/create
+Content-Type: application/json
+
+{
+    "name": "Moving Bytes"
+}
+
+### GET ONE COMPANY ###
+GET http://localhost:3000/company
+Content-Type: application/json
+
+{
+    "id": 1
+}

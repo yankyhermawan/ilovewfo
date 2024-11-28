@@ -2,6 +2,7 @@ import { StatusCodes } from 'http-status-codes'
 import { PrismaService } from '../prisma.service'
 import { ResponseInterface } from '../utility/response'
 import { Company } from './company.interface'
+import getQueryParams from './getQueryParams'
 
 export default class CompanyService {
     private readonly prismaService: PrismaService
@@ -40,10 +41,7 @@ export default class CompanyService {
     async getCompany(data: Company): Promise<ResponseInterface> {
         const response = await this.prismaService.company.findFirst({
             where: {
-                OR: [
-                    { id: data.id },
-                    { name: { contains: data.name } }
-                ]
+                ...getQueryParams(data)
             }
         })
         if (!response) {

@@ -3,6 +3,7 @@ import { FindUser } from './user.interface'
 import { ResponseInterface } from '../utility/response'
 import { StatusCodes } from 'http-status-codes'
 import isEmpty from 'lodash/isEmpty'
+import getQueryParams from './getQueryParams'
 
 export default class UserService {
     private readonly prismaService: PrismaService
@@ -16,9 +17,7 @@ export default class UserService {
             omit: {
                 password: true
             },
-            where: {
-                ...data
-            }
+            where: { ...getQueryParams(data) }
         })
         if (isEmpty(response)) {
             return {
@@ -35,7 +34,7 @@ export default class UserService {
     async getUser(data: FindUser): Promise<ResponseInterface> {
         const response = await this.prismaService.user.findFirst({
             omit: { password: true },
-            where: { ...data }
+            where: { ...getQueryParams(data) }
         })
         if (isEmpty(response)) {
             return {
