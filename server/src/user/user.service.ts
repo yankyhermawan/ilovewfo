@@ -34,7 +34,8 @@ export default class UserService {
     async getUser(data: FindUser): Promise<ResponseInterface> {
         const response = await this.prismaService.user.findFirst({
             omit: { password: true },
-            where: { ...getQueryParams(data) }
+            where: { ...getQueryParams(data) },
+            include: { company: true }
         })
         if (isEmpty(response)) {
             return {

@@ -42,6 +42,9 @@ export default class CompanyService {
         const response = await this.prismaService.company.findFirst({
             where: {
                 ...getQueryParams(data)
+            },
+            include: {
+                user: true
             }
         })
         if (!response) {
