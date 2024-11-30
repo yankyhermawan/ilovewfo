@@ -60,3 +60,6 @@ Content-Type: application/json
 {
     "id": 1
 }
+
+### MATERIAL ###
+GET http://localhost:3000/material/all

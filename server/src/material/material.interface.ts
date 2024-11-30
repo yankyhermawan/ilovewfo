@@ -1,8 +1,5 @@
 export interface CreateMaterial {
     name: string
-    image: string
-    position_x: number
-    position_y: number
     rotation: number
     width: number
     height: number
@@ -13,8 +10,6 @@ export interface CreateMaterial {
 export interface Material {
     name?: string
     image?: string
-    position_x?: number
-    position_y?: number
     rotation?: number
     width?: number
     height?: number

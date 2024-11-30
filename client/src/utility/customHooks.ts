@@ -11,3 +11,12 @@ export const useEffectAfterMount = (callback: React.EffectCallback, dependencies
         callback()
     }, dependencies)
 }
+
+export const usePrevious = (value: number, defaultValue: number) => {
+    const ref = useRef<number>(defaultValue)
+
+    useEffect(() => {
+        ref.current = value
+    }, [value])
+    return ref.current
+}

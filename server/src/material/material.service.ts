@@ -7,8 +7,8 @@ import isEmpty from 'lodash/isEmpty'
 
 export default class MaterialService {
 
-    async createMaterial(data: CreateMaterial): Promise<ResponseInterface> {
-        const res = await prismaService.material.create({
+    async createMaterial(data: CreateMaterial[]): Promise<ResponseInterface> {
+        const res = await prismaService.material.createManyAndReturn({
             data
         })
         return {

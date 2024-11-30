@@ -62,14 +62,12 @@ model company {
 model material {
   id Int @id @default(autoincrement())
   name String
-  image String
-  position_x Int
-  position_y Int
   rotation Int
   width Int
   height Int
   walkable Boolean
   image_url String
+  is_identical Boolean @default(true)
   company_material company_material[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -81,6 +79,8 @@ model company_material {
   company company @relation(fields: [company_id], references: [id])
   material_id Int
   material material @relation(fields: [material_id], references: [id])
+  position_x Int
+  position_y Int
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
