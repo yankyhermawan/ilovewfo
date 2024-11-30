@@ -13,6 +13,7 @@ export async function formatAndSendResponse(res: Response, callBack: () => Promi
         const response = await callBack()
         res.status(response.status).json(response.data || response.errorMessage)
     } catch (err) {
+        console.log(err)
         res.status(500).json({ "erorr": "Internal Service Error" })
     }
 }
