@@ -1,4 +1,4 @@
-import { PrismaService } from '../prisma.service'
+import { prismaService, prismaServiceWithUserPassword } from '../prisma.service'
 import { User, LoginUser, ForgetPassword } from './user.interface'
 import { ResponseInterface } from '../utility/response'
 import { StatusCodes } from 'http-status-codes'
@@ -7,16 +7,11 @@ import jwt from 'jsonwebtoken'
 import otpGenerator from 'otp-generator'
 import moment from 'moment'
 import { transporter } from '../utility/mailer'
+import omit from 'lodash/omit'
 
 export default class UserAuth {
-    private readonly prismaService: PrismaService
-
-    constructor() {
-        this.prismaService = new PrismaService()
-    }
-
     async register(data: User): Promise<ResponseInterface> {
-        const userExist = await this.prismaService.user.findUnique({
+        const userExist = await prismaService.user.findUnique({
             where: {
                 username: data.username
             }
@@ -27,7 +22,7 @@ export default class UserAuth {
                 errorMessage: 'User already registered'
             }
         }
-        const response = await this.prismaService.user.create({
+        const response = await prismaService.user.create({
             data: {
                 ...data,
                 password: bcrypt.hashSync(data.password, Number(process.env.HASH_SALT))
@@ -43,7 +38,7 @@ export default class UserAuth {
     }
 
     async login(data: LoginUser): Promise<ResponseInterface> {
-        const user = await this.prismaService.user.findUnique({
+        const user = await prismaServiceWithUserPassword.user.findUnique({
             where: { username: data.username }
         })
         if (!user) {
@@ -68,7 +63,7 @@ export default class UserAuth {
             algorithm: 'HS256'
         })
         const response = {
-            ...user,
+            ...omit(user, ['password']),
             token
         }
         return {
@@ -78,7 +73,7 @@ export default class UserAuth {
     }
 
     async generateOtp(username: string): Promise<ResponseInterface> {
-        const user = await this.prismaService.user.findUnique({
+        const user = await prismaService.user.findUnique({
             where: { username }
         })
         if (!user) {
@@ -92,7 +87,7 @@ export default class UserAuth {
             upperCaseAlphabets: false,
             specialChars: false
         })
-        const otp = await this.prismaService.otp.create({
+        const otp = await prismaService.otp.create({
             data: {
                 user_id: user.id,
                 otp_number: Number(otpNumber),
@@ -119,7 +114,7 @@ export default class UserAuth {
     }
 
     async forgetPassword(data: ForgetPassword): Promise<ResponseInterface> {
-        const user = await this.prismaService.user.findUnique({
+        const user = await prismaService.user.findUnique({
             where: { username: data.username }
         })
         if (!user) {
@@ -128,7 +123,7 @@ export default class UserAuth {
                 errorMessage: 'User not found'
             }
         }
-        const otp = await this.prismaService.otp.findFirst({
+        const otp = await prismaService.otp.findFirst({
             where: {
                 user_id: user.id,
                 otp_number: data.otp_number,
@@ -148,12 +143,12 @@ export default class UserAuth {
                 errorMessage: 'Otp expired'
             }
         }
-        const updatedPassword = await this.prismaService.user.update({
+        const updatedPassword = await prismaService.user.update({
             omit: { password: true },
             data: { password: bcrypt.hashSync(data.new_password, Number(process.env.HASH_SALT)) },
             where: { id: user.id }
         })
-        await this.prismaService.otp.delete({ where: { id: otp.id } })
+        await prismaService.otp.delete({ where: { id: otp.id } })
         return {
             status: StatusCodes.OK,
             data: updatedPassword

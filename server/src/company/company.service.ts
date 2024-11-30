@@ -1,15 +1,10 @@
 import { StatusCodes } from 'http-status-codes'
-import { PrismaService } from '../prisma.service'
+import { prismaService } from '../prisma.service'
 import { ResponseInterface } from '../utility/response'
 import { Company, CreateCompany } from './company.interface'
 import getQueryParams from './getQueryParams'
 
 export default class CompanyService {
-    private readonly prismaService: PrismaService
-    constructor() {
-        this.prismaService = new PrismaService()
-    }
-
     async createCompany(data: CreateCompany): Promise<ResponseInterface> {
         if (!data.name) {
             return {
@@ -17,7 +12,7 @@ export default class CompanyService {
                 errorMessage: 'Please provide a company name'
             }
         }
-        const response = await this.prismaService.company.create({
+        const response = await prismaService.company.create({
             data: { ...data }
         })
         return {
@@ -27,7 +22,7 @@ export default class CompanyService {
     }
 
     async getCompanies(name: string): Promise<ResponseInterface> {
-        const response = await this.prismaService.company.findMany({
+        const response = await prismaService.company.findMany({
             where: {
                 name: { contains: name }
             }
@@ -39,7 +34,7 @@ export default class CompanyService {
     }
 
     async getCompany(data: Company): Promise<ResponseInterface> {
-        const response = await this.prismaService.company.findFirst({
+        const response = await prismaService.company.findFirst({
             where: {
                 ...getQueryParams(data)
             },

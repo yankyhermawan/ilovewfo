@@ -13,13 +13,16 @@ Content-Type: application/json
 
 {
     "username": "yanky",
-    "password": "abc123"
+    "password": "abcd1234"
 }
 
-#### REFRESH ####
+#### GET ALL USER ####
 GET http://localhost:3000/user
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJ5YW5reSIsImlhdCI6MTczMjc0MTcwMywiZXhwIjoxNzMyODI4MTAzfQ.Tu_4_7td8dfCFfsm5Xga-TkPBiHr-MYWahaYxkXR0cs
 Content-Type: application/json
+
+{
+    "id": 1
+}
 
 ### GET ALL USER ###
 GET http://localhost:3000/user/all
