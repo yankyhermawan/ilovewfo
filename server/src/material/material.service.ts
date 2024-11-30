@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma.service'
 import { CreateMaterial, Material } from './material.interface'
 import { ResponseInterface } from '../utility/response'
 import getQueryParams from './getQueryParams'
+import isEmpty from 'lodash/isEmpty'
 
 export default class MaterialService {
     private readonly prismaService: PrismaService
@@ -27,7 +28,7 @@ export default class MaterialService {
                 ...getQueryParams(data)
             }
         })
-        if (!res) {
+        if (isEmpty(res)) {
             return {
                 status: StatusCodes.NOT_FOUND,
                 errorMessage: 'No Materials Found'
