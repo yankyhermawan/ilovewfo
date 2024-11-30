@@ -50,6 +50,10 @@ model company {
   id Int @id @default(autoincrement())
   name String
   company_material company_material[]
+  x_length Int @default(0)
+  y_length Int @default(0)
+  entry_point_x Int @default(0)
+  entry_point_y Int @default(0)
   user user[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -59,6 +63,13 @@ model material {
   id Int @id @default(autoincrement())
   name String
   image String
+  position_x Int
+  position_y Int
+  rotation Int
+  width Int
+  height Int
+  walkable Boolean
+  image_url String
   company_material company_material[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
