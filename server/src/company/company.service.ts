@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes'
 import { PrismaService } from '../prisma.service'
 import { ResponseInterface } from '../utility/response'
-import { Company } from './company.interface'
+import { Company, CreateCompany } from './company.interface'
 import getQueryParams from './getQueryParams'
 
 export default class CompanyService {
@@ -10,7 +10,7 @@ export default class CompanyService {
         this.prismaService = new PrismaService()
     }
 
-    async createCompany(data: Company): Promise<ResponseInterface> {
+    async createCompany(data: CreateCompany): Promise<ResponseInterface> {
         if (!data.name) {
             return {
                 status: StatusCodes.BAD_REQUEST,
@@ -18,7 +18,7 @@ export default class CompanyService {
             }
         }
         const response = await this.prismaService.company.create({
-            data: { name: data.name }
+            data: { ...data }
         })
         return {
             status: StatusCodes.CREATED,
