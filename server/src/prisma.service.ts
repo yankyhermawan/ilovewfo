@@ -1,11 +1,11 @@
 import { PrismaClient } from '@prisma/client'
 
-export class PrismaService extends PrismaClient {
-	constructor() {
-		super();
-		this.connect();
+export const prismaService = new PrismaClient({
+	omit: {
+		user: {
+			password: true
+		}
 	}
-	async connect() {
-		await this.$connect();
-	}
-}
+})
+
+export const prismaServiceWithUserPassword = new PrismaClient()

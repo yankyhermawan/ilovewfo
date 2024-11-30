@@ -1,19 +1,14 @@
 import { StatusCodes } from 'http-status-codes'
-import { PrismaService } from '../prisma.service'
+import { prismaService } from '../prisma.service'
 import { CreateMaterial, Material } from './material.interface'
 import { ResponseInterface } from '../utility/response'
 import getQueryParams from './getQueryParams'
 import isEmpty from 'lodash/isEmpty'
 
 export default class MaterialService {
-    private readonly prismaService: PrismaService
-
-    constructor() {
-        this.prismaService = new PrismaService()
-    }
 
     async createMaterial(data: CreateMaterial): Promise<ResponseInterface> {
-        const res = await this.prismaService.material.create({
+        const res = await prismaService.material.create({
             data
         })
         return {
@@ -23,7 +18,7 @@ export default class MaterialService {
     }
 
     async getMaterials(data: Material): Promise<ResponseInterface> {
-        const res = await this.prismaService.material.findMany({
+        const res = await prismaService.material.findMany({
             where: {
                 ...getQueryParams(data)
             }
