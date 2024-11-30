@@ -1,26 +1,41 @@
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import { Request, Response, NextFunction } from 'express'
 
-const authentication = (token: string) => {
-		try {
-			return jwt.verify(token, String(process.env['JWT_KEY'])) as JwtPayload;
-		} catch (err) {
-			return false;
-		}
+interface payload {
+	id: number
+	username: string
+}
+
+export const getUserIdFromToken = (req: Request) => {
+	try {
+		const token = String(req.headers["authorization"]?.split(" ")[1].replace("'", ""))
+		const dt = jwt.verify(token, String(process.env['JWT_KEY'])) as payload
+		return dt
+	} catch (err) {
+		return null
 	}
+}
+
+const authentication = (token: string) => {
+	try {
+		return jwt.verify(token, String(process.env['JWT_KEY'])) as JwtPayload
+	} catch (err) {
+		return false
+	}
+}
 
 const authorization = (userID: string, token: string) => {
     try {
-        const decodedToken = authentication(token);
+        const decodedToken = authentication(token)
         if (typeof decodedToken === 'boolean') {
-            return false;
+            return false
         }
         if (decodedToken.id !== userID) {
-            return false;
+            return false
         }
-        return true;
+        return true
     } catch (err) {
-        return false;
+        return false
     }
 }
 
@@ -32,15 +47,15 @@ export const authenticationMiddleware = (
 	try {
 		const token = String(
 			req.headers["authorization"]?.split(" ")[1].replace("'", "")
-		);
-		const checkToken = authentication(token);
+		)
+		const checkToken = authentication(token)
 		if (checkToken) {
-			next();
+			next()
 		} else {
-			res.status(401).json("Invalid token");
+			res.status(401).json("Invalid token")
 		}
 	} catch (err) {
-		res.status(500).json("Error authenticating");
+		res.status(500).json("Error authenticating")
 	}
 };
 
@@ -56,9 +71,9 @@ export const authorizationMiddleware = (
 		if (authorization(req.params.id, token)) {
 			next()
 		} else {
-			res.status(401).json("Unauthorized");
+			res.status(401).json("Unauthorized")
 		}
 	} catch (err) {
-		res.status(500).json("Error Authorization");
+		res.status(500).json("Error Authorization")
 	}
 };

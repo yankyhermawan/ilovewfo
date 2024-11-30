@@ -63,3 +63,7 @@ Content-Type: application/json
 
 ### MATERIAL ###
 GET http://localhost:3000/material/all
+
+### MAP ###
+POST http://localhost:3000/map/create
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJ5YW5reSIsImlhdCI6MTczMjk4MjU2OSwiZXhwIjoxNzMzNTg3MzY5fQ.T1If4pIJ0Z5bi6zE2K1C3PrvwawJSnno2HETg9lQecQ

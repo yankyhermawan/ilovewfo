@@ -1,4 +1,5 @@
-import { endpoint } from "./endpoint"
+import { endpoint } from './endpoint'
+const token = ''
 
 export const regexNumberOnly = /^[0-9]*$/
 
@@ -14,6 +15,7 @@ export const post = async (prefix: string, data: string) => {
     fetch(`${endpoint}${prefix}`, {
         method: 'POST',
         headers: {
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
         },
         body: data

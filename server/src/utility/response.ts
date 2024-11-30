@@ -1,10 +1,11 @@
 import { Response } from 'express'
 import { UserResponse } from '../user/user.interface'
 import { Company } from '../company/company.interface'
+import { MapInterface } from '../map/map.interface'
 
 export interface ResponseInterface {
     status: number
-    data?: UserResponse[] | UserResponse | Company[] | Company | { message: string }
+    data?: UserResponse[] | UserResponse | Company[] | Company | { message: string } | MapInterface | MapInterface[]
     errorMessage?: string
 }
 

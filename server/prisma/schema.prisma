@@ -23,8 +23,8 @@ model user {
   position Position?
   user_character user_character[]
   otp otp[]
-  company_id Int?
-  company company? @relation(fields: [company_id], references: [id])
+  company_id Int
+  company company @relation(fields: [company_id], references: [id])
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
