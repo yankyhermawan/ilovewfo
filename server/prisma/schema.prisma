@@ -23,8 +23,9 @@ model user {
   position Position?
   user_character user_character[]
   otp otp[]
-  company_id Int
-  company company @relation(fields: [company_id], references: [id])
+  company_id Int?
+  company company[]
+  company_member company_member[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
@@ -54,9 +55,20 @@ model company {
   y_length Int @default(0)
   entry_point_x Int @default(0)
   entry_point_y Int @default(0)
-  user user[]
+  map_name String @default("")
+  user_id Int
+  user user @relation(fields: [user_id], references: [id])
+  company_member company_member[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+}
+
+model company_member {
+  id Int @id @default(autoincrement())
+  company_id Int
+  company company @relation(fields: [company_id], references: [id])
+  member_id Int
+  member user @relation(fields: [member_id], references: [id])
 }
 
 model material {

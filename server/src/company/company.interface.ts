@@ -9,4 +9,5 @@ export interface CreateCompany {
     y_length: number
     entry_point_x: number
     entry_point_y: number
+    user_id: number
 }
