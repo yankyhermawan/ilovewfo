@@ -14,12 +14,10 @@ const App = () => {
 	const pathname = window.location.pathname
 
 	if (token && pathname === '/login' && isTokenValid && isTokenChecked) {
-		console.log('a')
 		window.location.href = '/'
 	}
 
 	if (!token && pathname !== '/login' && !isTokenValid && !isTokenChecked) {
-		console.log('b')
 		window.location.href = '/login'
 	}
 
