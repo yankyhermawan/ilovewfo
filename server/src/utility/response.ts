@@ -9,10 +9,10 @@ export interface ResponseInterface {
     errorMessage?: string
 }
 
-export async function formatAndSendResponse(res: Response, callBack: () => Promise<ResponseInterface>) {
+export async function formatAndSendResponse(res: Response, callBack: () => Promise<ResponseInterface> | ResponseInterface) {
     try {
         const response = await callBack()
-        res.status(response.status).json(response.data || response.errorMessage)
+        res.status(response.status).json(response.data || { error: response.errorMessage })
     } catch (err) {
         console.log(err)
         res.status(500).json({ "erorr": "Internal Service Error" })

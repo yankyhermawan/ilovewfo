@@ -1,9 +1,13 @@
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import { Request, Response, NextFunction } from 'express'
+import { StatusCodes } from 'http-status-codes'
+import { ResponseInterface } from '../utility/response'
 
 interface payload {
 	id: number
-	username: string
+	username: string,
+	iat: number,
+	exp: number
 }
 
 export const getUserIdFromToken = (req: Request) => {
@@ -13,6 +17,29 @@ export const getUserIdFromToken = (req: Request) => {
 		return dt
 	} catch (err) {
 		return null
+	}
+}
+
+export const checkTokenValid = (req: Request): ResponseInterface => {
+	try {
+		const token = String(req.headers["authorization"]?.split(" ")[1].replace("'", ""))
+		const dt = jwt.verify(token, String(process.env['JWT_KEY'])) as payload
+		const exp = dt.exp
+		if (Date.now() < exp) {
+			return {
+				status: StatusCodes.UNAUTHORIZED,
+				errorMessage: 'Token Expired'
+			}
+		}
+		return {
+			status: StatusCodes.OK,
+			data: { message: 'Access Granted' }
+		}
+	} catch (err) {
+		return {
+			status: StatusCodes.INTERNAL_SERVER_ERROR,
+			errorMessage: 'Internal Service Error'
+		}
 	}
 }
 

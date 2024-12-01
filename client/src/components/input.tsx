@@ -1,5 +1,11 @@
 import map from 'lodash/map'
 import uniqueId from 'lodash/uniqueId'
+import toUpper from 'lodash/toUpper'
+
+export enum InputEnum {
+    name='name',
+    password='password'
+}
 
 interface InputInterface {
     disabled?: boolean
@@ -9,7 +15,7 @@ interface InputInterface {
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
     placeholder?: string
     required?: boolean
-    type?: string
+    type?: InputEnum
     value?: string
 }
 
@@ -30,11 +36,11 @@ interface SelectInterface {
 }
 
 const Input = (props: InputInterface) => {
-    const { label = '', type = 'text', value = '', placeholder = '', onChange, maxLength, minLength, required = false, disabled = false } = props
+    const { label = '', type = InputEnum.name, value = '', placeholder = '', onChange, maxLength, minLength, required = false, disabled = false } = props
     const disabledClassName = disabled ? 'cursor-not-allowed bg-gray-200' : 'hover:bg-slate-300'
     const id = uniqueId()
     return (
-        <div className='flex flex-col'>
+        <div className='flex flex-col gap-2'>
             <label
                 htmlFor={id}
             >
@@ -60,7 +66,7 @@ const Input = (props: InputInterface) => {
 const Button = (props: ButtonInterface) => {
     const { placeholder = 'Submit', onClick, disabled = false } = props
     const allowedCursor = disabled ? 'cursor-not-allowed' : ''
-    const bg = disabled ? 'bg-gray-400' : 'bg-blue-400'
+    const bg = disabled ? 'bg-gray-400' : 'bg-blue-400 hover:bg-blue-600'
     return (
         <button
             className={`${allowedCursor} ${bg} p-2 rounded-xl w-full`}
@@ -106,4 +112,12 @@ const Select = (props: SelectInterface) => {
     )
 }
 
-export { Input, Button, Select }
+const Title = ({ title }: { title: string }) => {
+    return (
+        <div className='w-full p-4 bg-white/10 rounded-t-xl text-center font-semibold text-xl font-serif'>
+            {toUpper(title)}
+        </div>
+    )
+}
+
+export { Input, Button, Select, Title }

@@ -10,5 +10,6 @@ userRouter.post('/login', userHandler.loginHandler)
 userRouter.post('/otp', userHandler.generateOtpHandler)
 userRouter.post('/forgetpassword', userHandler.forgetPasswordHandler)
 userRouter.get('/', userHandler.getUserHandler)
+userRouter.get('/check-token', userHandler.checkTokenValidHandler)
 
 export { userRouter }

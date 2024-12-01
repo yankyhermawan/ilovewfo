@@ -1,25 +1,58 @@
 import { endpoint } from './endpoint'
-const token = ''
+const token = localStorage.getItem('token')
 
 export const regexNumberOnly = /^[0-9]*$/
 
+export const regexLowercase = /^[a-z]/
+
+export const regexUppercase = /^[A-Z]/
+
+export const regexCharNumber = /^[a-zA-Z0-9]+$/
+
+export const regexSymbol = /^[!@#\$%\^&\*\(\)_\+\-=\[\]\{\};:'",<>\.\?/\\|`~]+$/
+
+export const regexSpace = /\s/
+
 export const get = async (prefix: string) => {
-    return fetch(`${endpoint}${prefix}`, {
-        method: 'GET',
-    })
-    .then(res => res.json())
-    .catch(err => console.error(err))
+    try {
+        const res = await fetch(`${endpoint}${prefix}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        const jsonData = await res.json()
+        return {
+            status: res.status,
+            data: jsonData
+        }
+    } catch (err) {
+        return {
+            status: 500,
+            data: 'Error'
+        }
+    }
 }
 
 export const post = async (prefix: string, data: string) => {
-    fetch(`${endpoint}${prefix}`, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        },
-        body: data
-    })
-    .then(res => res.json())
-    .catch(err => console.error(err))
+    try {
+        const res = await fetch(`${endpoint}${prefix}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: data
+        })
+        const jsonData = await res.json()
+        return {
+            status: res.status,
+            data: jsonData
+        }
+    } catch (err) {
+        return {
+            status: 500,
+            data: 'Error'
+        }
+    }
 }

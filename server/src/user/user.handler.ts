@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import UserService from './user.service'
 import { formatAndSendResponse } from '../utility/response'
 import UserAuth from './user.auth'
+import { checkTokenValid } from './user.guard'
 
 const userService = new UserService()
 const userAuth = new UserAuth()
@@ -35,5 +36,9 @@ export default class UserHandler {
     async forgetPasswordHandler(req: Request, res: Response) {
         const data = req.body
         formatAndSendResponse(res, () => userAuth.forgetPassword(data))
+    }
+
+    async checkTokenValidHandler(req: Request, res: Response) {
+        formatAndSendResponse(res, () => checkTokenValid(req))
     }
 }
