@@ -41,7 +41,6 @@ const Material = () => {
         if (file && file.length > 0) {
             const base64 = await convertImage(file[0])
             if (base64) {
-                console.log(base64)
                 setBase64String(base64)
             }
         }

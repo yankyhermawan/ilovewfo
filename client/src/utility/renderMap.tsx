@@ -14,7 +14,6 @@ interface MapInterface {
 
 const renderMap = (props: MapInterface) => {
     const { map, currentPosition = [], handleClickCell, selectedCell = [], materialCellData = [], materials = [] } = props
-    console.log(materials)
     const renderResult = []
     if (map.length !== 2 || map.includes(0)) return null
     for (let i = map[1] - 1; i >= 0; i--) {

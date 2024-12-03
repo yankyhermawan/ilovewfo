@@ -97,7 +97,6 @@ function Main() {
 	useEffect(() => {
 		const getData = async () => {
 			const res = await getCompanyMaterials({ id: 1 })
-			console.log('a', res)
 		}
 		getData()
 	}, [])

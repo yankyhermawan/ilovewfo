@@ -36,7 +36,6 @@ export default class MaterialService {
     }
 
     async getCompanyMaterials(id: number): Promise<ResponseInterface> {
-        console.log(id)
         const res = await prismaService.material.findMany({
             where: {
                 company_material: {

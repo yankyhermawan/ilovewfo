@@ -22,7 +22,6 @@ const Login = () => {
 
     const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value
-        console.log(regexSymbol.test(value))
         if (
             (regexCharNumber.test(value) || regexSymbol.test(value))
         ) {
