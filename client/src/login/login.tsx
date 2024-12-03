@@ -1,4 +1,4 @@
-import { Input, Button, Title, InputEnum } from '../components/input'
+import { Input, Button, Title } from '../components/input'
 import { useEffect, useState } from 'react'
 import { regexCharNumber, regexSpace, regexSymbol } from '../utility/common'
 import { login } from './actions'
@@ -8,6 +8,7 @@ const Login = () => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [buttonClicked, setButtonClicked] = useState(false)
+    const [togglePassword, setTogglePassword] = useState(false)
     
     const handleChangeUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value
@@ -21,15 +22,19 @@ const Login = () => {
 
     const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value
+        console.log(regexSymbol.test(value))
         if (
             (regexCharNumber.test(value) || regexSymbol.test(value))
-            && !regexSpace.test(value)
         ) {
             setPassword(value)
         }
         if (value === '') {
             setPassword('')
         }
+    }
+
+    const handleToggleShowPassword = () => {
+        setTogglePassword(!togglePassword)
     }
 
     useEffect(() => {
@@ -55,7 +60,8 @@ const Login = () => {
                     <div className='flex flex-col gap-8 mx-8 pb-8'>
                         <Input label='Username' onChange={handleChangeUsername} value={username} />
                         <div className='flex flex-col gap-2'>
-                            <Input label='Password' onChange={handleChangePassword} type={InputEnum.password} value={password} />
+                            <Input label='Password' onChange={handleChangePassword} type={togglePassword ? 'text' : 'password'} value={password} />
+                            <div onClick={handleToggleShowPassword}>Show Password</div>
                             <div className='flex flex-row justify-between'>
                                 <a href='' className='text-xs underline'>Register</a>
                                 <a href='' className='text-xs underline'>Forgot Password ?</a>

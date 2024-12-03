@@ -9,13 +9,16 @@ export const regexUppercase = /^[A-Z]/
 
 export const regexCharNumber = /^[a-zA-Z0-9]+$/
 
-export const regexSymbol = /^[!@#\$%\^&\*\(\)_\+\-=\[\]\{\};:'",<>\.\?/\\|`~]+$/
+export const regexSymbol = /.*?[!@#\$%\^&\*\(\)_\+\-=\[\]\{\};:'",<>\.\?/\\|`~]+$/
 
 export const regexSpace = /\s/
 
-export const get = async (prefix: string) => {
+export const get = async (prefix: string, data?: Record<string, any>) => {
     try {
-        const res = await fetch(`${endpoint}${prefix}`, {
+        const queryString = data
+            ? `?${new URLSearchParams(data).toString()}`
+            : ''
+        const res = await fetch(`${endpoint}${prefix}${queryString}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`

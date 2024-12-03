@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
-import person from '../assets/person-solid.svg'
 import table from '../assets/table.jpg'
+import person from '../assets/person-solid.svg'
 import isEmpty from 'lodash/isEmpty'
 import filter from 'lodash/filter'
 import isEqual from 'lodash/isEqual'
-import renderMap from '../utility/renderMap'
+import renderMap from './renderMap'
+import { io } from 'socket.io-client'
+import { getCompanyMaterials } from '../material/action'
+import { MaterialInterface } from '../material/material'
 
 const dummyMap = [9, 16]
 
@@ -35,6 +38,8 @@ const properties = [
 function Main() {
 	const [currentPosition, setCurrentPosition] = useState<number[]>([1, 1])
 	const [rotation, setRotation] = useState<number>(0)
+	const [materials, setMaterials] = useState<MaterialInterface>()
+	// const socket = io(':3000')
 	const isAbleToMove = (nextPosition: number[]) => {
 		return isEmpty(filter(properties, dt => isEqual(dt.position, nextPosition) && !dt.walkable))
 	}
@@ -45,7 +50,6 @@ function Main() {
 			if (nextPosition[1] >= 0
 				&& isAbleToMove(nextPosition)
 			) {
-				console.log(nextPosition)
 				setCurrentPosition(nextPosition)
 			}
 		}
@@ -54,7 +58,6 @@ function Main() {
 			if (currentPosition[1] + 1 < dummyMap[1]
 				&& isAbleToMove(nextPosition)
 			) {
-				console.log(nextPosition)
 				setCurrentPosition(nextPosition)
 			}
 		}
@@ -63,7 +66,6 @@ function Main() {
 			if (currentPosition[0] - 1 >= 0
 				&& isAbleToMove(nextPosition)
 			) {
-				console.log(nextPosition)
 				setCurrentPosition(nextPosition)
 			}
 		}
@@ -72,7 +74,6 @@ function Main() {
 			if (nextPosition[0] < dummyMap[0]
 				&& isAbleToMove(nextPosition)
 			) {
-				console.log(nextPosition)
 				setCurrentPosition(nextPosition)
 			}
 		}
@@ -92,6 +93,14 @@ function Main() {
 			)
 		})
 	}
+
+	useEffect(() => {
+		const getData = async () => {
+			const res = await getCompanyMaterials({ id: 1 })
+			console.log('a', res)
+		}
+		getData()
+	}, [])
 
 	useEffect(() => {
 		let timeoutId: number | null = null
@@ -136,11 +145,11 @@ function Main() {
 			window.removeEventListener('keydown', handleKeyDown)
 			window.removeEventListener('keyup', handleKeyUp)
 		};
-	}, [currentPosition])	  
+	}, [currentPosition])
 
 	return (
 		<div className='flex flex-col'>
-			{renderMap({ map: dummyMap, currentPosition })}
+			{renderMap({ size: [5, 5], userPosition: [{ id: 1, x: 2, y: 3, src: person }] })}
 			{renderProperties()}
 		</div>
 	)

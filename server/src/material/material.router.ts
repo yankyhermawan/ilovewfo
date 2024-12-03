@@ -6,5 +6,6 @@ const materialHandler = new MaterialHandler()
 
 materialRouter.post('/create', materialHandler.createHandler)
 materialRouter.get('/all', materialHandler.getMaterialsHandler)
+materialRouter.get('/company-materials', materialHandler.getCompanyMaterialsHandler)
 
 export { materialRouter }
