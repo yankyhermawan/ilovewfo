@@ -1,4 +1,4 @@
-import { MouseEventHandler, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import person from '../assets/person-solid.svg'
 import isEmpty from 'lodash/isEmpty'
 import filter from 'lodash/filter'
@@ -42,7 +42,7 @@ function Main() {
 	const [currentPosition, setCurrentPosition] = useState<number[]>([1, 1])
 	const [rotation, setRotation] = useState<number>(0)
 	const [materials, setMaterials] = useState<MaterialInterfaceWithPosition[]>([])
-	const [myData, setMyData] = useState<myData>()
+	const [myData, setMyData] = useState<Partial<myData>>({})
 	const [message, setMessage] = useState('')
 	const [isTyping, setIsTyping] = useState(false)
 	const [allMessage, setAllMessage] = useState<chat[]>([])
