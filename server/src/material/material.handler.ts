@@ -15,4 +15,9 @@ export default class MaterialHandler {
         const data = req.body
         formatAndSendResponse(res, () => materialService.getMaterials(data))
     }
+
+    async getCompanyMaterialsHandler(req: Request, res: Response) {
+        const id = Number(req.query.id)
+        formatAndSendResponse(res, () => materialService.getCompanyMaterials(id))
+    }
 }

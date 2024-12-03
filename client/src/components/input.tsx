@@ -1,12 +1,6 @@
 import map from 'lodash/map'
 import uniqueId from 'lodash/uniqueId'
 import toUpper from 'lodash/toUpper'
-
-export enum InputEnum {
-    name='name',
-    password='password'
-}
-
 interface InputInterface {
     disabled?: boolean
     label?: string
@@ -15,7 +9,7 @@ interface InputInterface {
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
     placeholder?: string
     required?: boolean
-    type?: InputEnum
+    type?: 'text' | 'password'
     value?: string
 }
 
@@ -36,7 +30,7 @@ interface SelectInterface {
 }
 
 const Input = (props: InputInterface) => {
-    const { label = '', type = InputEnum.name, value = '', placeholder = '', onChange, maxLength, minLength, required = false, disabled = false } = props
+    const { label = '', type = 'text', value = '', placeholder = '', onChange, maxLength, minLength, required = false, disabled = false } = props
     const disabledClassName = disabled ? 'cursor-not-allowed bg-gray-200' : 'hover:bg-slate-300'
     const id = uniqueId()
     return (

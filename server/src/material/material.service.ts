@@ -34,4 +34,24 @@ export default class MaterialService {
             data: res
         }
     }
+
+    async getCompanyMaterials(id: number): Promise<ResponseInterface> {
+        console.log(id)
+        const res = await prismaService.material.findMany({
+            where: {
+                company_material: {
+                    some: {
+                        company_id: id
+                    }
+                }
+            },
+            include: {
+                company_material: true
+            }
+        })
+        return {
+            status: StatusCodes.OK,
+            data: res
+        }
+    }
 }

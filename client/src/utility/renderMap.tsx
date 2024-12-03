@@ -14,6 +14,7 @@ interface MapInterface {
 
 const renderMap = (props: MapInterface) => {
     const { map, currentPosition = [], handleClickCell, selectedCell = [], materialCellData = [], materials = [] } = props
+    console.log(materials)
     const renderResult = []
     if (map.length !== 2 || map.includes(0)) return null
     for (let i = map[1] - 1; i >= 0; i--) {
@@ -23,6 +24,7 @@ const renderMap = (props: MapInterface) => {
             const img = i === currentPosition[1] && j === currentPosition[0] && currentPosition.length === 2 ? <img src={person} width={24} height={24}/> : <></>
             const currentCell = find(materialCellData, dt => dt.position.x === i && dt.position.y === j)
             const currentMaterial = find(materials, dt => dt.id === currentCell?.materialId)
+            if (currentMaterial) console.log(currentMaterial)
             const materialImg = currentMaterial ? <img src={currentMaterial.image_url as string} className='w-full h-full' /> : <></>
             res.push(
                 <>
@@ -41,7 +43,7 @@ const renderMap = (props: MapInterface) => {
             )
         }
         renderResult.push(
-            <div className='flex flex-row flex-nowrap items-center' key={`${i}`}>
+            <div className='flex flex-row flex-nowrap items-center justify-center' key={`${i}`}>
                 {res}
             </div>
         )

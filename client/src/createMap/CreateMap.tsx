@@ -121,7 +121,8 @@ const CreateMap = () => {
     useEffect(() => {
         const getData = async () => {
             const res = await getMaterials()
-            setMaterials(res)
+            const data = res.data
+            setMaterials(data)
         }
         getData()
     }, [])
