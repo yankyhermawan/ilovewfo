@@ -1,4 +1,4 @@
-import { company_material } from '@prisma/client'
+import { company_map } from '@prisma/client'
 
 export interface CreateMaterial {
     name: string
@@ -17,5 +17,5 @@ export interface Material {
     height?: number
     walkable?: boolean
     image_url?: string
-    company_material? : company_material | company_material[]
+    company_map? : company_map | company_map[]
 }

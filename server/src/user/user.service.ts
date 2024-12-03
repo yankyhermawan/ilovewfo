@@ -38,4 +38,26 @@ export default class UserService {
             data: response
         }
     }
+
+    async getMyData(userId: number | null): Promise<ResponseInterface> {
+        if (!userId) {
+            return {
+                status: StatusCodes.BAD_REQUEST,
+                errorMessage: 'Invalid User ID'
+            }
+        }
+        const res = await prismaService.user.findUnique({
+            where: { id: userId }
+        })
+        if (!res) {
+            return {
+                status: StatusCodes.NOT_FOUND,
+                errorMessage: 'User does not exist'
+            }
+        }
+        return {
+            status: StatusCodes.OK,
+            data: res
+        }
+    }
 }

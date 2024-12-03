@@ -16,7 +16,7 @@ export const getUserIdFromToken = (req: Request) => {
 		const dt = jwt.verify(token, String(process.env['JWT_KEY'])) as payload
 		return dt
 	} catch (err) {
-		return null
+		return { id: null }
 	}
 }
 

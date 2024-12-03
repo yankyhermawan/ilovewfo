@@ -13,7 +13,7 @@ export default class MapService {
                 errorMessage: 'Please Provice a company ID'
             }
         }
-        const res = await prismaService.company_material.findMany({
+        const res = await prismaService.company_map.findMany({
             where: { company_id }
         })
         if (isEmpty(res)) {
@@ -46,7 +46,7 @@ export default class MapService {
             }
         }
         const mappedData = map(data, dt => ({ ...dt, company_id }))
-        const res = await prismaService.company_material.createManyAndReturn({
+        const res = await prismaService.company_map.createManyAndReturn({
             data: mappedData
         })
         return {

@@ -2,10 +2,10 @@ POST http://localhost:3000/user/register
 Content-Type: application/json
 
 {
-    "username": "yanky",
+    "username": "yanky1",
+    "email": "yankyhermawan42@gmail.com",
     "name": "yanky",
-    "password": "abc123",
-    "position": "CEO"
+    "password": "abc123"
 }
 #### LOGIN ####
 POST http://localhost:3000/user/login

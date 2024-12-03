@@ -38,14 +38,14 @@ export default class MaterialService {
     async getCompanyMaterials(id: number): Promise<ResponseInterface> {
         const res = await prismaService.material.findMany({
             where: {
-                company_material: {
+                company_map: {
                     some: {
                         company_id: id
                     }
                 }
             },
             include: {
-                company_material: true
+                company_map: true
             }
         })
         return {

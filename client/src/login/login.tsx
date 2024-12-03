@@ -1,6 +1,6 @@
 import { Input, Button, Title } from '../components/input'
 import { useEffect, useState } from 'react'
-import { regexCharNumber, regexSpace, regexSymbol } from '../utility/common'
+import { regexCharNumber, regexSymbol } from '../utility/common'
 import { login } from './actions'
 import notification from '../components/notification'
 

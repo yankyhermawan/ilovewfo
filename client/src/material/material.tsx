@@ -19,7 +19,7 @@ export interface MaterialInterface {
     name: string
     rotation: number
     image_url: string | ArrayBuffer
-    walkable: number
+    walkable: boolean
     width: number
     height: number
     is_identical: number
@@ -28,7 +28,7 @@ const Material = () => {
     const [name, setName] = useState<string>('')
     const [rotation, setRotation] = useState<number>(0)
     const [base64String, setBase64String] = useState<string | ArrayBuffer>('')
-    const [walkable, setWalkable] = useState<number>(0)
+    const [walkable, setWalkable] = useState<boolean>(false)
     const [width, setWidth] = useState(1)
     const [height, setHeight] = useState(1)
     const [sumData, setSumData] = useState<MaterialInterface[]>([])
@@ -71,7 +71,7 @@ const Material = () => {
 
     const onChangeWalkable = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value
-        setWalkable(Number(value))
+        setWalkable(Boolean(Number(value)))
     }
 
     const onChangeDimensions = (dir: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -197,7 +197,7 @@ const Material = () => {
                 />
                 <Select
                     label='Walkable ?'
-                    value={walkable}
+                    value={Number(walkable)}
                     options={yesNoOptions}
                     onChange={onChangeWalkable}
                     required={true}

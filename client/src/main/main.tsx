@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react'
-import table from '../assets/table.jpg'
+import { MouseEventHandler, useEffect, useState } from 'react'
 import person from '../assets/person-solid.svg'
 import isEmpty from 'lodash/isEmpty'
 import filter from 'lodash/filter'
@@ -8,40 +7,48 @@ import renderMap from './renderMap'
 import { io } from 'socket.io-client'
 import { getCompanyMaterials } from '../material/action'
 import { MaterialInterface } from '../material/material'
+import { map } from 'lodash'
+import { getMyData } from '../login/actions'
+import { useEffectAfterMount } from '../utility/customHooks'
+import { Input } from '../components/input'
+import send from '../assets/send.svg'
+
+interface MaterialInterfaceWithPosition extends MaterialInterface {
+	position_x: number
+	position_y: number
+}
+
+interface MaterialResponse extends MaterialInterface {
+	company_material: {
+		position_x: number
+		position_y: number
+	}[]
+}
+
+interface myData {
+	id: number | null
+	room_id: number | null
+}
+
+interface chat {
+	sender_id: number
+	message: string
+}
 
 const dummyMap = [9, 16]
-
-const properties = [
-	{
-		id: 1,
-		name: 'table',
-		position: [3, 2],
-		rotation: 0,
-		width: 1,
-		height: 1,
-		src: table,
-		walkable: false
-	},
-	{
-		id: 1,
-		name: 'table',
-		position: [4, 2],
-		rotation: 0,
-		width: 1,
-		height: 1,
-		src: table,
-		walkable: false
-	}
-]
 
 
 function Main() {
 	const [currentPosition, setCurrentPosition] = useState<number[]>([1, 1])
 	const [rotation, setRotation] = useState<number>(0)
-	const [materials, setMaterials] = useState<MaterialInterface>()
-	// const socket = io(':3000')
+	const [materials, setMaterials] = useState<MaterialInterfaceWithPosition[]>([])
+	const [myData, setMyData] = useState<myData>()
+	const [message, setMessage] = useState('')
+	const [isTyping, setIsTyping] = useState(false)
+	const [allMessage, setAllMessage] = useState<chat[]>([])
+	const socket = io(':3000')
 	const isAbleToMove = (nextPosition: number[]) => {
-		return isEmpty(filter(properties, dt => isEqual(dt.position, nextPosition) && !dt.walkable))
+		return isEmpty(filter(materials, dt => isEqual([dt.position_y, dt.position_x], nextPosition[1]) && !dt.walkable))
 	}
 
 	const walk = (dir = '') => {
@@ -79,27 +86,49 @@ function Main() {
 		}
 	}
 
-	const renderProperties = () => {
-		return properties.map((prop, key) => {
-			const offsetX = prop.position[0] * 64
-			const offsetY = prop.position[1] * 64
-			const width = prop.width * 64
-			const height = prop.height * 64
-
-			return (
-				<div className='absolute' key={key} style={{ marginLeft: `${offsetX}px`, marginTop: `${offsetY}px` }}>
-					<img src={prop.src} width={width} height={height} />
-				</div>
-			)
-		})
-	}
-
 	useEffect(() => {
 		const getData = async () => {
 			const res = await getCompanyMaterials({ id: 1 })
+			const resData: MaterialResponse[] = res.data
+			const materialRes: MaterialInterfaceWithPosition[] = []
+			map(resData, dt => {
+				const { company_material, image_url, height, width, walkable, name, rotation, is_identical } = dt
+				map(company_material, mat => {
+					materialRes.push({
+						name,
+						rotation,
+						is_identical,
+						image_url,
+						height,
+						width,
+						walkable,
+						position_x: mat.position_x,
+						position_y: mat.position_y
+					})
+				})
+			})
+			setMaterials(materialRes)
+		}
+		const getMe = async () => {
+			const res = await getMyData()
+			setMyData(res.data)
 		}
 		getData()
+		getMe()
 	}, [])
+
+	useEffectAfterMount(() => {
+		if (myData) {
+			socket.emit('join_room', { room_id: myData.room_id, user_id: myData.id })
+		}
+	}, [myData])
+
+	useEffect(() => {
+		socket.on('join_room', (dt) => console.log(dt))
+		socket.on('chat', ({ sender_id, message }) => {
+			setAllMessage(prevState => [...prevState, { sender_id, message }])
+		})
+	}, [socket])
 
 	useEffect(() => {
 		let timeoutId: number | null = null
@@ -137,20 +166,69 @@ function Main() {
 				timeoutId = null
 			}
 		}
-	  
-		window.addEventListener('keydown', handleKeyDown)
-		window.addEventListener('keyup', handleKeyUp)
+
+		if (!isTyping) {
+			window.addEventListener('keydown', handleKeyDown)
+			window.addEventListener('keyup', handleKeyUp)
+		}
 		return () => {
 			window.removeEventListener('keydown', handleKeyDown)
 			window.removeEventListener('keyup', handleKeyUp)
 		};
-	}, [currentPosition])
+	}, [currentPosition, isTyping])
+
+	useEffectAfterMount(() => {
+		if (isTyping && message) {
+			const listener = (e: KeyboardEvent) => {
+				if (e.code === 'Enter') {
+					handleSendMessage()
+					window.removeEventListener('keydown', listener)
+				} 
+				window.removeEventListener('keydown', listener)
+			}
+			window.addEventListener('keydown', listener)
+		}
+	}, [isTyping, message])
+
+	const handleSendMessage = () => {
+		if (message !== '' && myData) {
+			socket.emit('chat', { room_id: myData.room_id, sender_id: myData.id, message })
+			setMessage('')
+		}
+	}
+
+	const renderChat = () => {
+		return map(allMessage, (dt, key) => {
+			const { sender_id, message } = dt
+			return (
+				<div key={key}>
+					{message}
+				</div>
+			)
+		})
+	}
 
 	return (
-		<div className='flex flex-col'>
-			{renderMap({ size: [5, 5], userPosition: [{ id: 1, x: 2, y: 3, src: person }] })}
-			{renderProperties()}
-		</div>
+		<>
+			<div className='flex flex-col w-screen h-screen'>
+				{renderMap({ size: [5, 5], userPosition: [{ id: 1, x: 2, y: 3, src: person }], materials })}
+			</div>
+			<div className='absolute w-96 h-screen bg-gray-300 top-0 right-0 p-8 flex flex-col justify-end'>
+				{renderChat()}
+				<div className='flex flex-row justify-between gap-4 items-center'>
+					<Input
+						placeholder='Input message here'
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessage(e.target.value)}
+						onFocus={() => setIsTyping(true)}
+						onBlur={() => setIsTyping(false)}
+						value={message}/>
+					<div className='h-full flex items-center' onClick={handleSendMessage}>
+						<img src={send} width={24} height={24} className='h-fit'/>
+					</div>
+				</div>
+			</div>
+		</>
+		
 	)
 }
 

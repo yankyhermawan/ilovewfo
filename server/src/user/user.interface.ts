@@ -1,12 +1,9 @@
-import { Position } from "@prisma/client"
-
 export interface User {
     id: number
     username: string
     email: string
     password: string
     name: string
-    position: Position | null
     company_id: number
 }
 
@@ -14,7 +11,6 @@ export interface UserResponse {
     id: number
     username: string
     name: string
-    position: Position | null
     token?: string
 }
 

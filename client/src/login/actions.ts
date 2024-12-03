@@ -10,3 +10,5 @@ interface Login {
 export const login = async (data: Login) => await post(`${BASE_ENDPOINT}/login`, JSON.stringify(data))
 
 export const checkToken = async () => await get(`${BASE_ENDPOINT}/check-token`)
+
+export const getMyData = async () => await get(`${BASE_ENDPOINT}/me`)

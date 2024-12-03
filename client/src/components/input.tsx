@@ -6,7 +6,9 @@ interface InputInterface {
     label?: string
     maxLength?: number
     minLength?: number
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+    onBlur?: React.FocusEventHandler
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void,
+    onFocus?: React.FocusEventHandler
     placeholder?: string
     required?: boolean
     type?: 'text' | 'password'
@@ -30,11 +32,11 @@ interface SelectInterface {
 }
 
 const Input = (props: InputInterface) => {
-    const { label = '', type = 'text', value = '', placeholder = '', onChange, maxLength, minLength, required = false, disabled = false } = props
+    const { label = '', type = 'text', value = '', placeholder = '', onChange, maxLength, minLength, required = false, disabled = false, onFocus, onBlur } = props
     const disabledClassName = disabled ? 'cursor-not-allowed bg-gray-200' : 'hover:bg-slate-300'
     const id = uniqueId()
     return (
-        <div className='flex flex-col gap-2'>
+        <div className='flex flex-col gap-2 w-full'>
             <label
                 htmlFor={id}
             >
@@ -50,7 +52,9 @@ const Input = (props: InputInterface) => {
                 type={type}
                 value={value}
                 placeholder={placeholder}
+                onBlur={onBlur}
                 onChange={onChange}
+                onFocus={onFocus}
                 required={required}
             />
         </div>
