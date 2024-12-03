@@ -39,6 +39,12 @@ export default class MapService {
             }
         }
         const { company_id } = user
+        if (!company_id) {
+            return {
+                status: StatusCodes.NOT_ACCEPTABLE,
+                errorMessage: 'Please create a company first'
+            }
+        }
         const mappedData = map(data, dt => ({ ...dt, company_id }))
         const res = await prismaService.company_material.createManyAndReturn({
             data: mappedData
