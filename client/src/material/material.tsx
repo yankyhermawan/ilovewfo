@@ -13,6 +13,7 @@ import find from 'lodash/find'
 import { useEffectAfterMount } from '../utility/customHooks'
 import { createMaterial } from './action'
 import filter from 'lodash/filter'
+import includes from 'lodash/includes'
 
 export interface MaterialInterface {
     id?: number
@@ -104,7 +105,8 @@ const Material = () => {
         }
         setBase64String('')
         setSumData(prevState => [...prevState, data])
-        const filteredData = filter(rotationOptions([]), dt => Number(dt.value) !== rotation)
+        const settedRotation = map([...sumData, data], dt => dt.rotation)
+        const filteredData = filter(rotationOptions([]), dt => !includes(settedRotation, Number(dt.value)))
         setRotation(Number(filteredData[0].value) || 0)
     }
 
@@ -127,6 +129,16 @@ const Material = () => {
 
     const handleSave = () => {
         createMaterial(sumData)
+        .then(dt => {
+            if (dt.status === 201) {
+                setName('')
+                setRotation(0)
+                setBase64String('')
+                setWalkable(false)
+                setApplyForAll(0)
+                setSumData([])
+            }
+        })
     }
 
     useEffectAfterMount(() => {
@@ -134,7 +146,7 @@ const Material = () => {
         const isDisabledButton = isEmpty(name) || isEmpty(base64String) || !width || !height || isRotationExist || sumData.length === 4
 
         setDisabledButton(isDisabledButton)
-    }, [base64String, rotation])
+    }, [base64String, rotation, sumData])
 
     useEffectAfterMount(() => {
         const arr = []
@@ -162,7 +174,7 @@ const Material = () => {
                     </div>
                     
                         <div className='w-full'>
-                            <Button placeholder='Save' onClick={handleSave} disabled={sumData.length === 4 || !applyForAll}/>
+                            <Button placeholder='Save' onClick={handleSave} disabled={(sumData.length !== 4 && !applyForAll) || (sumData.length !== 1 && !!applyForAll)}/>
                         </div>
                     
                 </div>

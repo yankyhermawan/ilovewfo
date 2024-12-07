@@ -7,11 +7,16 @@ import renderMap from './renderMap'
 import { io } from 'socket.io-client'
 import { getCompanyMaterials } from '../material/action'
 import { MaterialInterface } from '../material/material'
-import { map } from 'lodash'
-import { getMyData } from '../login/actions'
+import { find, map } from 'lodash'
+import { getMyData, getUsers } from '../login/actions'
 import { useEffectAfterMount } from '../utility/customHooks'
 import { Input } from '../components/input'
 import send from '../assets/send.svg'
+import BubbleChat from '../components/BubbleChat'
+import moment from 'moment'
+import micOn from '../assets/microphone.svg'
+import micOff from '../assets/mic-mute.svg'
+import { endpoint } from '../utility/endpoint'
 
 interface MaterialInterfaceWithPosition extends MaterialInterface {
 	position_x: number
@@ -26,13 +31,15 @@ interface MaterialResponse extends MaterialInterface {
 }
 
 interface myData {
-	id: number | null
+	id: number
+	name: string
 	room_id: number | null
 }
 
 interface chat {
 	sender_id: number
-	message: string
+	message: string,
+	time: string
 }
 
 const dummyMap = [9, 16]
@@ -46,7 +53,9 @@ function Main() {
 	const [message, setMessage] = useState('')
 	const [isTyping, setIsTyping] = useState(false)
 	const [allMessage, setAllMessage] = useState<chat[]>([])
-	const socket = io(':3000')
+	const [allUsers, setAllUsers] = useState<myData[]>([])
+	const [isMicOn, setIsMicOn] = useState(false)
+	const socket = io(endpoint)
 	const isAbleToMove = (nextPosition: number[]) => {
 		return isEmpty(filter(materials, dt => isEqual([dt.position_y, dt.position_x], nextPosition[1]) && !dt.walkable))
 	}
@@ -113,8 +122,14 @@ function Main() {
 			const res = await getMyData()
 			setMyData(res.data)
 		}
+
+		const getAllUsers = async () => {
+			const res = await getUsers({ room_id: 1 })
+			setAllUsers(res.data)
+		}
 		getData()
 		getMe()
+		getAllUsers()
 	}, [])
 
 	useEffectAfterMount(() => {
@@ -125,10 +140,96 @@ function Main() {
 
 	useEffect(() => {
 		socket.on('join_room', (dt) => console.log(dt))
-		socket.on('chat', ({ sender_id, message }) => {
-			setAllMessage(prevState => [...prevState, { sender_id, message }])
+		socket.on('chat', ({ sender_id, message, time }) => {
+			setAllMessage(prevState => [...prevState, { sender_id, message, time }])
+		})
+		socket.on('audioStream', ({ file, sender_id }) => {
+			if (sender_id === myData.id) return
+			const blob = new Blob([file], { type: 'audio/ogg' })
+			const audioUrl = URL.createObjectURL(blob)
+			const audio = new Audio(audioUrl)
+
+			if (!audio) {
+				return
+			}
+			audio.play()
 		})
 	}, [socket])
+
+	useEffect(() => {
+		let mediaRecorder: MediaRecorder | null = null
+		let stream: MediaStream | null = null
+
+		if (isMicOn) {
+			navigator.mediaDevices.getUserMedia({ audio: {
+				autoGainControl: true,
+				sampleRate: 44100,
+				sampleSize: 16,
+				echoCancellation: true,
+				noiseSuppression: true
+			}})
+				.then((userStream) => {
+					stream = userStream
+					mediaRecorder = new MediaRecorder(userStream)
+					const audioChunks: Blob[] = []
+	
+					mediaRecorder.addEventListener('dataavailable', (event) => {
+						audioChunks.push(event.data)
+					})
+	
+					mediaRecorder.addEventListener('stop', () => {
+						const audioBlob = new Blob(audioChunks)
+						audioChunks.length = 0
+	
+						const fileReader = new FileReader()
+						fileReader.readAsArrayBuffer(audioBlob)
+	
+						fileReader.onloadend = () => {
+							const arrayBuffer = fileReader.result
+							if (isMicOn) {
+								socket.emit('audioStream', {
+									room_id: myData.room_id,
+									file: arrayBuffer,
+									sender_id: myData.id
+								})
+							}
+						}
+					})
+	
+					mediaRecorder.start(10)
+					const interval = setInterval(() => {
+						if (mediaRecorder && mediaRecorder.state === 'recording') {
+							mediaRecorder.stop()
+							mediaRecorder.start(10)
+						}
+					}, 1000)
+	
+					// Cleanup interval and mediaRecorder on stop
+					return () => {
+						clearInterval(interval)
+						if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+							mediaRecorder.stop()
+						}
+						if (stream) {
+							stream.getTracks().forEach((track) => track.stop())
+						}
+					}
+				})
+				.catch((error) => {
+					console.error("Error accessing microphone:", error)
+				})
+		}
+	
+		// Cleanup on unmount or when isMicOn changes
+		return () => {
+			if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+				mediaRecorder.stop()
+			}
+			if (stream) {
+				stream.getTracks().forEach((track) => track.stop())
+			}
+		}
+	}, [isMicOn, socket, myData.room_id])	
 
 	useEffect(() => {
 		let timeoutId: number | null = null
@@ -174,7 +275,7 @@ function Main() {
 		return () => {
 			window.removeEventListener('keydown', handleKeyDown)
 			window.removeEventListener('keyup', handleKeyUp)
-		};
+		}
 	}, [currentPosition, isTyping])
 
 	useEffectAfterMount(() => {
@@ -192,29 +293,39 @@ function Main() {
 
 	const handleSendMessage = () => {
 		if (message !== '' && myData) {
-			socket.emit('chat', { room_id: myData.room_id, sender_id: myData.id, message })
+			socket.emit('chat', { room_id: myData.room_id, sender_id: myData.id, message, time: moment().format('HH:mm:ss') })
 			setMessage('')
 		}
 	}
 
 	const renderChat = () => {
 		return map(allMessage, (dt, key) => {
-			const { sender_id, message } = dt
+			const { sender_id, message, time } = dt
+			const senderName = find(allUsers, dt => dt.id === sender_id)?.name || ''
+			const isMe = sender_id === myData.id
 			return (
-				<div key={key}>
-					{message}
-				</div>
+				<BubbleChat sender={senderName} message={message} time={time} isMe={isMe} />
 			)
 		})
 	}
 
 	return (
-		<>
-			<div className='flex flex-col w-screen h-screen'>
-				{renderMap({ size: [5, 5], userPosition: [{ id: 1, x: 2, y: 3, src: person }], materials })}
+		<div className='w-screen h-screen flex flex-row justify-center'>
+			<div className='flex flex-col justify-between'>
+				<div className='flex flex-col'>
+					{renderMap({ size: [5, 5], userPosition: [{ id: 1, x: 2, y: 3, src: person }], materials })}
+				</div>
+				<div
+					className={`w-fit h-max p-4 border border-black border-solid rounded-full ${isMicOn ? 'bg-blue-400/75' : 'bg-red-300'}`}
+					onClick={() => setIsMicOn(prevState => !prevState)}
+				>
+					<img src={isMicOn ? micOn : micOff} width={75}/>
+				</div>
 			</div>
 			<div className='absolute w-96 h-screen bg-gray-300 top-0 right-0 p-8 flex flex-col justify-end'>
-				{renderChat()}
+				<div className='flex flex-col-reverse overflow-y-auto mb-4 gap-2'>
+					{renderChat()}
+				</div>
 				<div className='flex flex-row justify-between gap-4 items-center'>
 					<Input
 						placeholder='Input message here'
@@ -227,7 +338,7 @@ function Main() {
 					</div>
 				</div>
 			</div>
-		</>
+		</div>
 		
 	)
 }

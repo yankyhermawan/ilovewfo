@@ -27,25 +27,29 @@ const notification = (props: NotificationProps) => {
 
     if (startsWith(String(code), '1') || type === NotificationEnum.info) {
         return toast.info(msg, {
-            autoClose: 1000
+            autoClose: 1000,
+            pauseOnFocusLoss: false
         })
     }
 
     if (startsWith(String(code), '2') || type === NotificationEnum.success) {
         return toast.success(msg || 'Success!', {
             autoClose: 1000,
+            pauseOnFocusLoss: false
         })
     }
 
     if (type === NotificationEnum.warning) {
         return toast.warning(msg, {
-            autoClose: 1000
+            autoClose: 1000,
+            pauseOnFocusLoss: false
         })
     }
     
     if (startsWith(String(code), '4') || startsWith(String(code), '5') || type === NotificationEnum.error) {
         return toast.error(msg || 'Error', {
-            autoClose: 1000
+            autoClose: 1000,
+            pauseOnFocusLoss: false
         })
     }
 }

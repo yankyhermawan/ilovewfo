@@ -13,6 +13,7 @@ interface InputInterface {
     required?: boolean
     type?: 'text' | 'password'
     value?: string
+    additionalClassName?: string
 }
 
 interface ButtonInterface {
@@ -32,11 +33,11 @@ interface SelectInterface {
 }
 
 const Input = (props: InputInterface) => {
-    const { label = '', type = 'text', value = '', placeholder = '', onChange, maxLength, minLength, required = false, disabled = false, onFocus, onBlur } = props
+    const { label = '', type = 'text', value = '', placeholder = '', onChange, maxLength, minLength, required = false, disabled = false, onFocus, onBlur, additionalClassName = '' } = props
     const disabledClassName = disabled ? 'cursor-not-allowed bg-gray-200' : 'hover:bg-slate-300'
     const id = uniqueId()
     return (
-        <div className='flex flex-col gap-2 w-full'>
+        <div className={`flex flex-col gap-2 w-full ${additionalClassName}`}>
             <label
                 htmlFor={id}
             >
@@ -67,7 +68,7 @@ const Button = (props: ButtonInterface) => {
     const bg = disabled ? 'bg-gray-400' : 'bg-blue-400 hover:bg-blue-600'
     return (
         <button
-            className={`${allowedCursor} ${bg} p-2 rounded-xl w-full`}
+            className={`${allowedCursor} ${bg} p-2 rounded-xl w-full max-w-72 m-auto`}
             disabled={disabled}
             onClick={onClick}
         >
@@ -112,7 +113,7 @@ const Select = (props: SelectInterface) => {
 
 const Title = ({ title }: { title: string }) => {
     return (
-        <div className='w-full p-4 bg-white/10 rounded-t-xl text-center font-semibold text-xl font-serif'>
+        <div className='w-full p-4 bg-white/10 rounded-t-xl text-center font-semibold text-xl'>
             {toUpper(title)}
         </div>
     )

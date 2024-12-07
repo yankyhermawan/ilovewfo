@@ -1,4 +1,6 @@
 import { endpoint } from './endpoint'
+import notification from '../components/notification'
+
 const token = localStorage.getItem('token')
 
 export const regexNumberOnly = /^[0-9]*$/
@@ -13,6 +15,10 @@ export const regexSymbol = /.*?[!@#\$%\^&\*\(\)_\+\-=\[\]\{\};:'",<>\.\?/\\|`~]+
 
 export const regexSpace = /\s/
 
+export const defaultPage = 1
+
+export const defaultLimit = 5
+
 export const get = async (prefix: string, data?: Record<string, any>) => {
     try {
         const queryString = data
@@ -25,9 +31,15 @@ export const get = async (prefix: string, data?: Record<string, any>) => {
             }
         })
         const jsonData = await res.json()
+        if (jsonData.error) {
+            notification({
+                code: res.status,
+                msg: jsonData.error
+            })
+        }
         return {
             status: res.status,
-            data: jsonData
+            data: jsonData.data
         }
     } catch (err) {
         return {
@@ -48,9 +60,14 @@ export const post = async (prefix: string, data: string) => {
             body: data
         })
         const jsonData = await res.json()
+        notification({
+            code: res.status,
+            msg: jsonData.message || jsonData.error
+        })
+        
         return {
             status: res.status,
-            data: jsonData
+            data: jsonData.data
         }
     } catch (err) {
         return {

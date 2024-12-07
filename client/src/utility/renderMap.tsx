@@ -3,6 +3,7 @@ import { MaterialCellData, Position } from '../createMap/CreateMap'
 import { MaterialInterface } from '../material/material'
 import find from 'lodash/find'
 import isEmpty from 'lodash/isEmpty'
+import { Fragment } from 'react'
 interface MapInterface {
     map: number[]
     currentPosition?: number[]
@@ -25,18 +26,17 @@ const renderMap = (props: MapInterface) => {
             const currentMaterial = find(materials, dt => dt.id === currentCell?.materialId)
             const materialImg = currentMaterial ? <img src={currentMaterial.image_url as string} className='w-full h-full' /> : <></>
             res.push(
-                <>
+                <Fragment key={`${i}-${j}`}>
                     {j === 0 && <div className='mr-4'>{i}</div>}
                     <div
                     className={`flex flex-col flex-nowrap w-16 h-16 justify-center cursor-pointer border border-black border-solid ${selected}`}
-                    key={`${i}-${j}`}
                     onClick={(e) => handleClickCell(i, j)(e)}
                     >
                         {img}
                         {materialImg}
                     </div>
                     {j === map[0] - 1 && <div className='ml-4'>{i}</div>}
-                </>
+                </Fragment>
                 
             )
         }

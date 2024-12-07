@@ -2,7 +2,6 @@ import { Input, Button, Title } from '../components/input'
 import { useEffect, useState } from 'react'
 import { regexCharNumber, regexSymbol } from '../utility/common'
 import { login } from './actions'
-import notification from '../components/notification'
 
 const Login = () => {
     const [username, setUsername] = useState('')
@@ -40,7 +39,6 @@ const Login = () => {
         if (buttonClicked) {
             const loginAction = async () => {
                 const res = await login({ username, password })
-                notification({ code: res.status, msg: res.data.error })
                 if (res.data.token) {
                     localStorage.setItem('token', res.data.token)
                     window.location.href = '/'
