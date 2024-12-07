@@ -51,11 +51,6 @@ model company {
   id Int @id @default(autoincrement())
   name String
   company_map company_map[]
-  x_length Int @default(0)
-  y_length Int @default(0)
-  entry_point_x Int @default(0)
-  entry_point_y Int @default(0)
-  map_name String @default("")
   user_id Int
   user user @relation(fields: [user_id], references: [id])
   created_at DateTime @default(now())
@@ -82,6 +77,11 @@ model company_map {
   company company @relation(fields: [company_id], references: [id])
   material_id Int
   material material @relation(fields: [material_id], references: [id])
+  x_length Int @default(0)
+  y_length Int @default(0)
+  entry_point_x Int @default(0)
+  entry_point_y Int @default(0)
+  map_name String @default("")
   position_x Int
   position_y Int
   created_at DateTime @default(now())

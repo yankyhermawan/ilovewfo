@@ -4,15 +4,17 @@ interface queryParams {
     id?: number
     company_id?: number
     name?: string | { contains: string, mode: 'insensitive' }
-    username?: string | { contains: string, mode: 'insensitive' }
+    username?: string | { contains: string, mode: 'insensitive' },
+    room_id?: number
 }
 
 interface bodyParams extends FindUser {
-    auto_complete?: boolean
+    auto_complete?: boolean,
+    room_id?: number
 }
 
 const getQueryParams = (body: bodyParams) => {
-    const { id, name, company_id, username, auto_complete } = body
+    const { id, name, company_id, username, auto_complete, room_id } = body
     const result: queryParams = {}
 
     if (id) {
@@ -37,6 +39,10 @@ const getQueryParams = (body: bodyParams) => {
 
     if (company_id) {
         result.company_id = company_id
+    }
+
+    if (room_id) {
+        result.room_id = room_id
     }
 
     return result

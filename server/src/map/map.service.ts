@@ -46,12 +46,18 @@ export default class MapService {
             }
         }
         const mappedData = map(data, dt => ({ ...dt, company_id }))
-        const res = await prismaService.company_map.createManyAndReturn({
+        const res = await prismaService.company_map.createMany({
             data: mappedData
         })
+        if (res) {
+            return {
+                status: StatusCodes.CREATED,
+                message: 'Data saved successfully'
+            }
+        }
         return {
-            status: StatusCodes.CREATED,
-            data: res
+            status: StatusCodes.BAD_GATEWAY,
+            errorMessage: 'Something went wrong'
         }
     }
 }

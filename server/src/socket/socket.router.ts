@@ -4,9 +4,8 @@ import { Server as httpServer } from 'http'
 const initSocket = (server: httpServer) => {
     const io = new Server(server, {
         cors: {
-			origin: true,
-			methods: ["GET", "POST"],
-			credentials: true,
+			origin: '*',
+			methods: ["GET", "POST"]
 		}
     })
 
@@ -18,8 +17,13 @@ const initSocket = (server: httpServer) => {
             socket.broadcast.to(room_id).emit('join_room', `user id: ${user_id} has joined`)
         })
 
-        socket.on('chat', ({ sender_id, message, room_id }) => {
-            io.to(room_id).emit('chat', { sender_id, message })
+        socket.on('chat', ({ sender_id, message, room_id, time }) => {
+            io.to(room_id).emit('chat', { sender_id, message, time })
+        })
+
+        socket.on('audioStream', ({ room_id, file, sender_id }) => {
+            const audioBuffer = Buffer.from(new Uint8Array(file))
+            socket.broadcast.to(room_id).emit('audioStream', { sender_id, file: audioBuffer })
         })
     })
 }

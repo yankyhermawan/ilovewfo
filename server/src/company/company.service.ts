@@ -15,9 +15,15 @@ export default class CompanyService {
         const response = await prismaService.company.create({
             data: { ...data }
         })
+        if (response) {
+            return {
+                status: StatusCodes.CREATED,
+                message: 'Data Created'
+            }
+        }
         return {
-            status: StatusCodes.CREATED,
-            data: response
+            status: StatusCodes.BAD_GATEWAY,
+            errorMessage: 'Something went wrong'
         }
     }
 

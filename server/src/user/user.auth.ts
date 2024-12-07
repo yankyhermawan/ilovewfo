@@ -26,14 +26,17 @@ export default class UserAuth {
             data: {
                 ...data,
                 password: bcrypt.hashSync(data.password, Number(process.env.HASH_SALT))
-            },
-            omit: {
-                password: true
             }
         })
+        if (response) {
+            return {
+                status: StatusCodes.CREATED,
+                message: 'User has been registered'
+            }
+        }
         return {
-            status: StatusCodes.CREATED,
-            data: response
+            status: StatusCodes.BAD_GATEWAY,
+            errorMessage: 'Something went wrong'
         }
     }
 
@@ -108,8 +111,8 @@ export default class UserAuth {
             }
         }
         return {
-            status: StatusCodes.BAD_REQUEST,
-            errorMessage: 'Error Creating OTP'
+            status: StatusCodes.BAD_GATEWAY,
+            errorMessage: 'Something went wrong'
         }
     }
 
@@ -143,7 +146,7 @@ export default class UserAuth {
                 errorMessage: 'Otp expired'
             }
         }
-        const updatedPassword = await prismaService.user.update({
+        await prismaService.user.update({
             omit: { password: true },
             data: { password: bcrypt.hashSync(data.new_password, Number(process.env.HASH_SALT)) },
             where: { id: user.id }
@@ -151,7 +154,7 @@ export default class UserAuth {
         await prismaService.otp.delete({ where: { id: otp.id } })
         return {
             status: StatusCodes.OK,
-            data: updatedPassword
+            message: 'Password has been changed'
         }
     }
 }

@@ -36,7 +36,7 @@ POST http://localhost:3000/user/otp
 Content-Type: application/json
 
 {
-    "username": "yanky"
+    "username": "yanky1"
 }
 
 ### CHANGE PASSWORD ###
@@ -54,7 +54,8 @@ POST http://localhost:3000/company/create
 Content-Type: application/json
 
 {
-    "name": "Moving Bytes"
+    "name": "Moving Bytes",
+    "user_id": 1
 }
 
 ### GET ONE COMPANY ###

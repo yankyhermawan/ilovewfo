@@ -17,5 +17,5 @@ export interface Material {
     height?: number
     walkable?: boolean
     image_url?: string
-    company_map? : company_map | company_map[]
+    company_map?: company_map | company_map[]
 }

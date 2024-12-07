@@ -38,7 +38,7 @@ export const checkTokenValid = (req: Request): ResponseInterface => {
 	} catch (err) {
 		return {
 			status: StatusCodes.INTERNAL_SERVER_ERROR,
-			errorMessage: 'Internal Service Error'
+			errorMessage: 'Please re login'
 		}
 	}
 }
