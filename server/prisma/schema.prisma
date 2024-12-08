@@ -29,7 +29,7 @@ model user {
   room_id Int?
   room room? @relation(fields: [room_id], references: [id])
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  updated_at DateTime @updatedAt @default(now())
 }
 
 model character {
@@ -38,7 +38,7 @@ model character {
   image String
   user_character user_character[]
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  updated_at DateTime @updatedAt @default(now())
 }
 
 model user_character {
@@ -47,16 +47,18 @@ model user_character {
   user user @relation(fields: [user_id], references: [id])
   character_id Int
   character character @relation(fields: [character_id], references: [id])
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt @default(now())
 }
 
 model company {
   id Int @id @default(autoincrement())
   name String
-  company_map company_map[]
   user_id Int
   user user @relation(fields: [user_id], references: [id])
+  room room[]
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  updated_at DateTime @updatedAt @default(now())
 }
 
 model material {
@@ -68,32 +70,34 @@ model material {
   walkable Boolean
   image_url String
   is_identical Boolean @default(true)
-  company_map company_map[]
+  room_material room_material[]
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  updated_at DateTime @updatedAt @default(now())
 }
 
-model company_map {
+model room_material {
   id Int @id @default(autoincrement())
-  company_id Int
-  company company @relation(fields: [company_id], references: [id])
   material_id Int
   material material @relation(fields: [material_id], references: [id])
-  x_length Int @default(0)
-  y_length Int @default(0)
-  entry_point_x Int @default(0)
-  entry_point_y Int @default(0)
-  map_name String @default("")
   position_x Int
   position_y Int
+  room_id Int
+  room room @relation(fields: [room_id], references: [id])
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  updated_at DateTime @updatedAt @default(now())
 }
 
 model room {
   id Int @id @default(autoincrement())
   name String
   member user[]
+  entry_point_x Int @default(0)
+  entry_point_y Int @default(0)
+  company_id Int
+  company company @relation(fields: [company_id], references: [id])
+  room room_material[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt @default(now())
 }
 
 model otp {
@@ -104,5 +108,5 @@ model otp {
   valid_until DateTime
   is_valid Int @default(0)
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  updated_at DateTime @updatedAt @default(now())
 }
