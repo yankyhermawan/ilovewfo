@@ -20,6 +20,8 @@ model user {
   email String @unique
   password String
   name String
+  image_url String @default("")
+  is_logged_in Boolean @default(false)
   user_character user_character[]
   otp otp[]
   company_id Int?

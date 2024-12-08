@@ -50,6 +50,12 @@ export default class UserAuth {
                 errorMessage: 'User not found'
             }
         }
+        if (user.is_logged_in) {
+            return {
+                status: StatusCodes.CONFLICT,
+                errorMessage: 'User already logged in'
+            }
+        }
         const isPasswordMatch = bcrypt.compareSync(data.password, user.password)
         if (!isPasswordMatch) {
             return {
@@ -57,6 +63,10 @@ export default class UserAuth {
                 errorMessage: 'Password Mismatch'
             }
         }
+        await prismaService.user.update({
+            data: { is_logged_in: true },
+            where: { id: user.id }
+        })
         const payload = {
             id: user.id,
             username: user.username
@@ -156,5 +166,19 @@ export default class UserAuth {
             status: StatusCodes.OK,
             message: 'Password has been changed'
         }
+    }
+
+    async logout(user_id: number) {
+        await prismaService.user.update({
+            data: { is_logged_in: false },
+            where: { id: user_id }
+        })
+    }
+
+    async setLogin(user_id: number) {
+        await prismaService.user.update({
+            data: { is_logged_in: true },
+            where: { id: user_id }
+        })
     }
 }

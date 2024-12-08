@@ -13,4 +13,4 @@ export const checkToken = async () => await get(`${BASE_ENDPOINT}/check-token`)
 
 export const getMyData = async () => await get(`${BASE_ENDPOINT}/me`)
 
-export const getUsers = async (data: { room_id: number }) => await get(`${BASE_ENDPOINT}/all`, data)
+export const getUsers = async (data: { room_id: number, is_logged_in: boolean }) => await get(`${BASE_ENDPOINT}/all`, data)

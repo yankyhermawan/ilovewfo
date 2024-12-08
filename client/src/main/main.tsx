@@ -4,10 +4,12 @@ import isEmpty from 'lodash/isEmpty'
 import filter from 'lodash/filter'
 import isEqual from 'lodash/isEqual'
 import renderMap from './renderMap'
+import find from 'lodash/find'
+import map from 'lodash/map'
+import orderBy from 'lodash/orderBy'
+import uniqBy from 'lodash/uniqBy'
 import { io } from 'socket.io-client'
 import { getCompanyMaterials } from '../material/action'
-import { MaterialInterface } from '../material/material'
-import { find, map } from 'lodash'
 import { getMyData, getUsers } from '../login/actions'
 import { useEffectAfterMount } from '../utility/customHooks'
 import { Input } from '../components/input'
@@ -17,30 +19,8 @@ import moment from 'moment'
 import micOn from '../assets/microphone.svg'
 import micOff from '../assets/mic-mute.svg'
 import { endpoint } from '../utility/endpoint'
-
-interface MaterialInterfaceWithPosition extends MaterialInterface {
-	position_x: number
-	position_y: number
-}
-
-interface MaterialResponse extends MaterialInterface {
-	company_material: {
-		position_x: number
-		position_y: number
-	}[]
-}
-
-interface myData {
-	id: number
-	name: string
-	room_id: number | null
-}
-
-interface chat {
-	sender_id: number
-	message: string,
-	time: string
-}
+import { MaterialInterfaceWithPosition, myData, chat, MaterialResponse } from './main.interface'
+import UserOnline from './UserOnline'
 
 const dummyMap = [9, 16]
 
@@ -55,6 +35,7 @@ function Main() {
 	const [allMessage, setAllMessage] = useState<chat[]>([])
 	const [allUsers, setAllUsers] = useState<myData[]>([])
 	const [isMicOn, setIsMicOn] = useState(false)
+	const [allUsersInRoom, setAllUsersInRoom] = useState<myData[]>([])
 	const socket = io(endpoint)
 	const isAbleToMove = (nextPosition: number[]) => {
 		return isEmpty(filter(materials, dt => isEqual([dt.position_y, dt.position_x], nextPosition[1]) && !dt.walkable))
@@ -124,8 +105,9 @@ function Main() {
 		}
 
 		const getAllUsers = async () => {
-			const res = await getUsers({ room_id: 1 })
+			const res = await getUsers({ room_id: 1, is_logged_in: true })
 			setAllUsers(res.data)
+			setAllUsersInRoom(res.data)
 		}
 		getData()
 		getMe()
@@ -134,14 +116,14 @@ function Main() {
 
 	useEffectAfterMount(() => {
 		if (myData) {
-			socket.emit('join_room', { room_id: myData.room_id, user_id: myData.id })
+			socket.emit('join_room', { ...myData })
 		}
 	}, [myData])
 
 	useEffect(() => {
-		socket.on('join_room', (dt) => console.log(dt))
+		socket.on('join_room', dt => setAllUsersInRoom(prevState => orderBy(uniqBy([...prevState, dt], 'id'), 'name')))
 		socket.on('chat', ({ sender_id, message, time }) => {
-			setAllMessage(prevState => [...prevState, { sender_id, message, time }])
+			setAllMessage(prevState => [{ sender_id, message, time }, ...prevState])
 		})
 		socket.on('audioStream', ({ file, sender_id }) => {
 			if (sender_id === myData.id) return
@@ -152,9 +134,27 @@ function Main() {
 			if (!audio) {
 				return
 			}
+			audio.volume = 0.5
 			audio.play()
 		})
+
+		socket.on('disconnected', user_id => {
+			console.log(user_id)
+			setAllUsersInRoom(prevState => filter(prevState, dt => dt.id !== user_id))
+		})
 	}, [socket])
+
+	useEffect(() => {
+		const handleBeforeUnload = () => {
+			socket.emit('disconnected', { user_id: myData.id, room_id: myData.room_id })
+		}
+
+		window.addEventListener('unload', handleBeforeUnload)
+
+		return (() => {
+			window.removeEventListener('unload', handleBeforeUnload)
+		})
+	}, [socket, myData.id])
 
 	useEffect(() => {
 		let mediaRecorder: MediaRecorder | null = null
@@ -163,7 +163,8 @@ function Main() {
 		if (isMicOn) {
 			navigator.mediaDevices.getUserMedia({ audio: {
 				autoGainControl: true,
-				sampleRate: 44100,
+				channelCount: 2,
+				sampleRate: 48000,
 				sampleSize: 16,
 				echoCancellation: true,
 				noiseSuppression: true
@@ -229,7 +230,7 @@ function Main() {
 				stream.getTracks().forEach((track) => track.stop())
 			}
 		}
-	}, [isMicOn, socket, myData.room_id])	
+	}, [isMicOn, socket, myData.room_id])
 
 	useEffect(() => {
 		let timeoutId: number | null = null
@@ -293,7 +294,7 @@ function Main() {
 
 	const handleSendMessage = () => {
 		if (message !== '' && myData) {
-			socket.emit('chat', { room_id: myData.room_id, sender_id: myData.id, message, time: moment().format('HH:mm:ss') })
+			socket.emit('chat', { room_id: myData.room_id, sender_id: myData.id, message, time: moment().utc().format('YYYY-MM-DD HH:mm:ss') })
 			setMessage('')
 		}
 	}
@@ -304,13 +305,19 @@ function Main() {
 			const senderName = find(allUsers, dt => dt.id === sender_id)?.name || ''
 			const isMe = sender_id === myData.id
 			return (
-				<BubbleChat sender={senderName} message={message} time={time} isMe={isMe} />
+				<div key={key}>
+					<BubbleChat sender={senderName} message={message} time={time} isMe={isMe} />
+				</div>
 			)
 		})
 	}
 
 	return (
 		<div className='w-screen h-screen flex flex-row justify-center'>
+			<div className='absolute w-48 bg-black/50 top-0 left-0 flex flex-col justify-start p-4 gap-4'>
+				<div>User in this room</div>
+				<UserOnline data={allUsersInRoom} />
+			</div>
 			<div className='flex flex-col justify-between'>
 				<div className='flex flex-col'>
 					{renderMap({ size: [5, 5], userPosition: [{ id: 1, x: 2, y: 3, src: person }], materials })}
