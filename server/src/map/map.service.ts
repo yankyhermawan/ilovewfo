@@ -6,15 +6,15 @@ import { CreateMapInterface } from './map.interface'
 import map from 'lodash/map'
 
 export default class MapService {
-    async getMap(company_id: number): Promise<ResponseInterface> {
-        if (!company_id) {
+    async getMap(room_id: number): Promise<ResponseInterface> {
+        if (!room_id) {
             return {
                 status: StatusCodes.METHOD_NOT_ALLOWED,
                 errorMessage: 'Please Provice a company ID'
             }
         }
-        const res = await prismaService.company_map.findMany({
-            where: { company_id }
+        const res = await prismaService.room_material.findMany({
+            where: { room_id }
         })
         if (isEmpty(res)) {
             return {
@@ -46,7 +46,7 @@ export default class MapService {
             }
         }
         const mappedData = map(data, dt => ({ ...dt, company_id }))
-        const res = await prismaService.company_map.createMany({
+        const res = await prismaService.room.createMany({
             data: mappedData
         })
         if (res) {

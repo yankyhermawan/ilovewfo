@@ -4,9 +4,11 @@ import { ResponseInterface } from '../utility/response'
 import { StatusCodes } from 'http-status-codes'
 import isEmpty from 'lodash/isEmpty'
 import getQueryParams from './getQueryParams'
+import { Prisma } from '@prisma/client'
 
 export default class UserService {
     async getUsers(data: FindUser): Promise<ResponseInterface> {
+        console.log(Prisma.ModelName)
         const response = await prismaService.user.findMany({
             where: { ...getQueryParams(data) }
         })

@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes'
-import { prismaService, prismaPagination } from '../prisma.service'
+import { prismaService } from '../prisma.service'
 import { CreateMaterial, Material } from './material.interface'
 import { ResponseInterface } from '../utility/response'
 import getQueryParams from './getQueryParams'
@@ -25,7 +25,7 @@ export default class MaterialService {
     }
 
     async getMaterials(data: Material, pagination: Partial<Pagination>): Promise<ResponseInterface> {
-        const res = await prismaPagination.material({
+        const res = await prismaService.material.findManyAndCountAll({
             ...pagination,
             where: {
                 ...getQueryParams(data)
@@ -46,14 +46,18 @@ export default class MaterialService {
     async getCompanyMaterials(id: number): Promise<ResponseInterface> {
         const res = await prismaService.material.findMany({
             where: {
-                company_map: {
+                room_material: {
                     some: {
-                        company_id: id
+                        room_id: id
                     }
                 }
             },
             include: {
-                company_map: true
+                room_material: {
+                    include: {
+                        room: true
+                    }
+                }
             }
         })
         return {

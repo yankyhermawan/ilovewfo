@@ -6,18 +6,30 @@ export const prismaService = new PrismaClient({
 			password: true
 		}
 	}
+}).$extends({
+	model: {
+		$allModels: {
+			async findManyAndCountAll<T> (
+				this: T,
+				{
+					take,
+					skip,
+					where
+				} : {
+					take?: number,
+					skip?: number,
+					where?: Prisma.Args<T, 'findMany'>['where']
+				}
+			) {
+				const context = Prisma.getExtensionContext(this)
+				const count = await (context as any).count({ where })
+				const rows = await (context as any).findMany({ take, skip, where })
+				return {
+					count,
+					rows
+				}
+			}
+		}
+	}
 })
-
-// NEED TO BE IMPROVE, MAP EVERY MODEL NAME, THEN APPLY COUNT AND ROWS AS KEY, VALUE!
-export const prismaPagination = {
-	company: async ({ take, skip, where }: { take?: number, skip?: number, where?: Prisma.companyWhereInput }) => ({
-		count: prismaService.company.count(),
-		rows: prismaService.company.findMany({ take, skip, where })
-	}),
-	material: async ({ take, skip, where }: { take?: number, skip?: number, where?: Prisma.materialWhereInput }) => ({
-		count: await prismaService.material.count(),
-		rows: await prismaService.material.findMany({ take, skip, where })
-	})
-}
-
 export const prismaServiceWithUserPassword = new PrismaClient()

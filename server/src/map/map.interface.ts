@@ -1,7 +1,8 @@
 export interface CreateMapInterface {
-    material_id: number
-    position_x: number
-    position_y: number
+    name: string
+    entry_point_x: number
+    entry_point_y: number
+    company_id: number
 }
 
 export interface MapInterface {
