@@ -134,12 +134,11 @@ function Main() {
 			if (!audio) {
 				return
 			}
-			audio.volume = 0.5
+			audio.volume = 0.25
 			audio.play()
 		})
 
 		socket.on('disconnected', user_id => {
-			console.log(user_id)
 			setAllUsersInRoom(prevState => filter(prevState, dt => dt.id !== user_id))
 		})
 	}, [socket])
@@ -164,7 +163,7 @@ function Main() {
 			navigator.mediaDevices.getUserMedia({ audio: {
 				autoGainControl: true,
 				channelCount: 2,
-				sampleRate: 48000,
+				sampleRate: 96000,
 				sampleSize: 16,
 				echoCancellation: true,
 				noiseSuppression: true
