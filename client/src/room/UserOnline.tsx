@@ -1,4 +1,4 @@
-import { myData } from './main.interface'
+import { myData } from './interface'
 import map from 'lodash/map'
 import avatar from '../assets/avatar.svg'
 

@@ -3,7 +3,8 @@ import { createCompany, getCompany, updateCompany } from './action'
 import { Company as CompanyInterface } from './interface'
 import isEqual from 'lodash/isEqual'
 import isEmpty from 'lodash/isEmpty'
-import { Input, Button } from '../components/input'
+import Input from '../components/Input/Input'
+import Button from '../components/Button/Button'
 
 const Company = () => {
     const [defaultCompanyData, setDefaultCompanyData] = useState<CompanyInterface>({})

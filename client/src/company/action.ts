@@ -1,4 +1,4 @@
-import { get, post, update } from '../utility/common'
+import { get, post, update } from '../utility/request'
 
 const BASE_URL = '/company'
 

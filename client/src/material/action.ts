@@ -1,5 +1,5 @@
-import { MaterialInterface } from './material'
-import { get, post } from '../utility/common'
+import { MaterialInterface } from './interface'
+import { get, post } from '../utility/request'
 import { toApi } from './transformer'
 import map from 'lodash/map'
 

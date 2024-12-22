@@ -13,18 +13,17 @@ import { io } from 'socket.io-client'
 import { getCompanyMaterials } from '../material/action'
 import { getMyData, getUsers } from '../login/actions'
 import { useEffectAfterMount } from '../utility/customHooks'
-import { Input } from '../components/input'
+import Input from '../components/Input/Input'
 import send from '../assets/send.svg'
 import BubbleChat from '../components/BubbleChat'
 import moment from 'moment'
 import micOn from '../assets/microphone.svg'
 import micOff from '../assets/mic-mute.svg'
-import { endpoint } from '../utility/endpoint'
-import { MaterialInterfaceWithPosition, myData, chat, MaterialResponse } from './main.interface'
+import { endpoint } from '../utility/constants'
+import { MaterialInterfaceWithPosition, myData, chat, MaterialResponse } from './interface'
 import UserOnline from './UserOnline'
 
 const dummyMap = [9, 16]
-
 
 function Room() {
 	const [currentPosition, setCurrentPosition] = useState<number[]>([1, 1])

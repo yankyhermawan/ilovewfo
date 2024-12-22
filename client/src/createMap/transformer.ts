@@ -1,4 +1,4 @@
-import { MaterialCellData } from './CreateMap'
+import { MaterialCellData } from './interface'
 
 export const toApi = (data: MaterialCellData) => ({
     material_id: data.materialId,

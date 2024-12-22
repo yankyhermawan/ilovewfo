@@ -1,4 +1,4 @@
-import { MaterialInterface } from '../material/material'
+import { MaterialInterface } from '../material/interface'
 
 export interface MaterialInterfaceWithPosition extends MaterialInterface {
 	position_x: number
@@ -26,4 +26,26 @@ export interface chat {
 	sender_id: number
 	message: string,
 	time: string
+}
+
+export interface UserPosition {
+    id: number
+    x: number
+    y: number
+    src: string
+}
+
+export interface MappedMaterials {
+    image_url: string | ArrayBuffer
+    height: number
+    width: number
+    walkable: boolean
+    position_x: number
+    position_y: number
+}
+
+export interface Map {
+    size: number[],
+    userPosition: UserPosition[],
+    materials: MappedMaterials[]
 }

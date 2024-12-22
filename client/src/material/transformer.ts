@@ -1,4 +1,4 @@
-import { MaterialInterface } from './material'
+import { MaterialInterface } from './interface'
 
 export const toApi = (data: MaterialInterface) => ({
     name: data.name,

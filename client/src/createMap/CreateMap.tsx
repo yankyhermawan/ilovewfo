@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import renderMap from '../utility/renderMap'
-import { regexNumberOnly } from '../utility/common'
-import { Input, Button } from '../components/input'
-import { MaterialInterface } from '../material/material'
+import { regexNumberOnly } from '../utility/constants'
+import Input from '../components/Input/Input'
+import Button from '../components/Button/Button'
+import { MaterialInterface } from '../material/interface'
 import { getMaterials } from '../material/action'
 import map from 'lodash/map'
 import { Card } from '../components/materialCard'
@@ -13,18 +14,7 @@ import { createMap } from './action'
 import debounce from 'lodash/debounce'
 import { useEffectAfterMount } from '../utility/customHooks'
 import Pagination from '../components/Pagination'
-
-export interface Position {
-    id: string
-    x: number
-    y: number
-}
-
-export interface MaterialCellData {
-    id: string
-    position: Position
-    materialId: number
-}
+import { Position, MaterialCellData } from './interface'
 
 const CreateMap = () => {
     const [mapName, setMapName] = useState('')

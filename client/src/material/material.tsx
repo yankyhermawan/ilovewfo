@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { convertImage } from '../utility/imageToBase64'
 import Uploader from '../components/uploader'
-import { Input, Button, Select } from '../components/input'
+import Input from '../components/Input/Input'
+import Button from '../components/Button/Button'
+import Select from '../components/Select/Select'
 import isEmpty from 'lodash/isEmpty'
-import { regexNumberOnly } from '../utility/common'
+import { regexNumberOnly } from '../utility/constants'
 import { yesNoOptions } from '../utility/yesNoOptions'
 import { rotationOptions } from '../utility/mapRotationOptions'
 import map from 'lodash/map'
@@ -14,17 +16,8 @@ import { useEffectAfterMount } from '../utility/customHooks'
 import { createMaterial } from './action'
 import filter from 'lodash/filter'
 import includes from 'lodash/includes'
+import { MaterialInterface } from './interface'
 
-export interface MaterialInterface {
-    id?: number
-    name: string
-    rotation: number
-    image_url: string | ArrayBuffer
-    walkable: boolean
-    width: number
-    height: number
-    is_identical: number
-}
 const Material = () => {
     const [name, setName] = useState<string>('')
     const [rotation, setRotation] = useState<number>(0)

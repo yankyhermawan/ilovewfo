@@ -1,5 +1,5 @@
 import map from 'lodash/map'
-import { MaterialInterface } from '../material/material'
+import { MaterialInterface } from '../material/interface'
 import find from 'lodash/find'
 import isEmpty from 'lodash/isEmpty'
 

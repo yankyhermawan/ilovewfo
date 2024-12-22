@@ -1,6 +1,8 @@
-import { Input, Button, Title } from '../components/input'
+import Input from '../components/Input/Input'
+import Button from '../components/Button/Button'
+import Title from '../components/Title'
 import { useEffect, useState } from 'react'
-import { regexCharNumber, regexSymbol } from '../utility/common'
+import { regexCharNumber, regexSymbol } from '../utility/constants'
 import { register } from '../login/actions'
 
 const Register = () => {

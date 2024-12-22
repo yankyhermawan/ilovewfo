@@ -2,28 +2,7 @@ import isEmpty from 'lodash/isEmpty'
 import find from 'lodash/find'
 import includes from 'lodash/includes'
 import person from '../assets/person-solid.svg'
-
-interface UserPosition {
-    id: number
-    x: number
-    y: number
-    src: string
-}
-
-interface MappedMaterials {
-    image_url: string | ArrayBuffer
-    height: number
-    width: number
-    walkable: boolean
-    position_x: number
-    position_y: number
-}
-
-interface Map {
-    size: number[],
-    userPosition: UserPosition[],
-    materials: MappedMaterials[]
-}
+import { Map } from './interface'
 
 const renderMap = (props: Map) => {
     const { size, userPosition, materials } = props

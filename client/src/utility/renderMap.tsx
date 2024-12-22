@@ -1,6 +1,6 @@
 import person from '../assets/person-solid.svg'
-import { MaterialCellData, Position } from '../createMap/CreateMap'
-import { MaterialInterface } from '../material/material'
+import { MaterialCellData, Position } from '../createMap/interface'
+import { MaterialInterface } from '../material/interface'
 import find from 'lodash/find'
 import isEmpty from 'lodash/isEmpty'
 import { Fragment } from 'react'

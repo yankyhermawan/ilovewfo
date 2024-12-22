@@ -1,23 +1,7 @@
-import { endpoint } from './endpoint'
+import { endpoint } from './constants'
 import notification from '../components/notification'
 
 const token = localStorage.getItem('token')
-
-export const regexNumberOnly = /^[0-9]*$/
-
-export const regexLowercase = /^[a-z]/
-
-export const regexUppercase = /^[A-Z]/
-
-export const regexCharNumber = /^[a-zA-Z0-9]+$/
-
-export const regexSymbol = /.*?[!@#\$%\^&\*\(\)_\+\-=\[\]\{\};:'",<>\.\?/\\|`~]+$/
-
-export const regexSpace = /\s/
-
-export const defaultPage = 1
-
-export const defaultLimit = 5
 
 export const get = async (prefix: string, data?: Record<string, any>) => {
     try {

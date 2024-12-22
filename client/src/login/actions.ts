@@ -1,4 +1,4 @@
-import { get, post } from '../utility/common'
+import { get, post } from '../utility/request'
 
 const BASE_ENDPOINT = '/user'
 

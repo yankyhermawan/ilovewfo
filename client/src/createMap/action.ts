@@ -1,5 +1,5 @@
-import { get, post } from '../utility/common'
-import { MaterialCellData } from './CreateMap'
+import { get, post } from '../utility/request'
+import { MaterialCellData } from './interface'
 import { toApi } from './transformer'
 import map from 'lodash/map'
 
