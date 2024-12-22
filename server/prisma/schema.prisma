@@ -25,9 +25,8 @@ model user {
   user_character user_character[]
   otp otp[]
   company_id Int?
-  company company[]
-  room_id Int?
-  room room? @relation(fields: [room_id], references: [id])
+  company company?
+  user_room user_room[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt @default(now())
 }
@@ -54,7 +53,7 @@ model user_character {
 model company {
   id Int @id @default(autoincrement())
   name String
-  user_id Int
+  user_id Int @unique
   user user @relation(fields: [user_id], references: [id])
   room room[]
   created_at DateTime @default(now())
@@ -90,12 +89,22 @@ model room_material {
 model room {
   id Int @id @default(autoincrement())
   name String
-  member user[]
   entry_point_x Int @default(0)
   entry_point_y Int @default(0)
   company_id Int
   company company @relation(fields: [company_id], references: [id])
   room room_material[]
+  user_room user_room[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt @default(now())
+}
+
+model user_room {
+  id Int @id @default(autoincrement())
+  user_id Int
+  user user @relation(fields: [user_id], references: [id])
+  room_id Int
+  room room @relation(fields: [room_id], references: [id])
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt @default(now())
 }
