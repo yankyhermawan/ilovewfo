@@ -7,6 +7,7 @@ import Material from './material/material'
 import Login from './login/login'
 import Register from './register/Register'
 import Company from './company/Company'
+import RoomList from './roomList/RoomList'
 import { checkToken } from './login/actions'
 
 import includes from 'lodash/includes'
@@ -54,8 +55,9 @@ const App = () => {
 		<>
 			<Router>
 				<Routes>
-					<Route path='/room/:id' Component={Room}/>
-					<Route path='/login' Component={Login}/>
+					<Route path='/room/join/:id' Component={Room} />
+					<Route path='/room/list' Component={RoomList} />
+					<Route path='/login' Component={Login} />
 					<Route path='/register' Component={Register} />
 					<Route path='/create-map' Component={CreateMap} />
 					<Route path='/material' Component={Material} />
