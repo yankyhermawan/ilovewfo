@@ -59,4 +59,24 @@ export default class CompanyService {
             data: response
         }
     }
+
+    async updateCompany(data: Company): Promise<ResponseInterface> {
+        if (!data.id || !data.name) {
+            const badRequestData = []
+            if (!data.id) badRequestData.push('Id')
+            if (!data.name) badRequestData.push('Name')
+            return {
+                status: StatusCodes.BAD_REQUEST,
+                errorMessage: `Pleaser Provide Company ${badRequestData.join(', ')}`
+            }
+        }
+        const response = await prismaService.company.update({
+            data: { name: data.name },
+            where: { id: data.id }
+        })
+        return {
+            status: StatusCodes.OK,
+            data: response
+        }
+    }
 }

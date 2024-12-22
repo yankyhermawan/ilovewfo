@@ -76,3 +76,31 @@ export const post = async (prefix: string, data: string) => {
         }
     }
 }
+
+export const update = async (prefix: string, data: string) => {
+    try {
+        const res = await fetch(`${endpoint}${prefix}`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: data
+        })
+        const jsonData = await res.json()
+        notification({
+            code: res.status,
+            msg: jsonData.message || jsonData.error
+        })
+        
+        return {
+            status: res.status,
+            data: jsonData.data
+        }
+    } catch (err) {
+        return {
+            status: 500,
+            data: 'Error'
+        }
+    }
+}

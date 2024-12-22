@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import person from '../assets/person-solid.svg'
 import isEmpty from 'lodash/isEmpty'
 import filter from 'lodash/filter'
@@ -25,7 +26,7 @@ import UserOnline from './UserOnline'
 const dummyMap = [9, 16]
 
 
-function Main() {
+function Room() {
 	const [currentPosition, setCurrentPosition] = useState<number[]>([1, 1])
 	const [rotation, setRotation] = useState<number>(0)
 	const [materials, setMaterials] = useState<MaterialInterfaceWithPosition[]>([])
@@ -36,6 +37,7 @@ function Main() {
 	const [allUsers, setAllUsers] = useState<myData[]>([])
 	const [isMicOn, setIsMicOn] = useState(false)
 	const [allUsersInRoom, setAllUsersInRoom] = useState<myData[]>([])
+	const { id: room_id } = useParams()
 	const socket = io(endpoint)
 	const isAbleToMove = (nextPosition: number[]) => {
 		return isEmpty(filter(materials, dt => isEqual([dt.position_y, dt.position_x], nextPosition[1]) && !dt.walkable))
@@ -105,7 +107,7 @@ function Main() {
 		}
 
 		const getAllUsers = async () => {
-			const res = await getUsers({ room_id: 1, is_logged_in: 1 })
+			const res = await getUsers({ room_id: Number(room_id), is_logged_in: 1 })
 			setAllUsers(res.data)
 			setAllUsersInRoom(res.data)
 		}
@@ -349,4 +351,4 @@ function Main() {
 	)
 }
 
-export default Main
+export default Room

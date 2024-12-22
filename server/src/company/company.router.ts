@@ -7,5 +7,6 @@ const companyHandler = new CompanyHandler()
 companyRouter.get('/', companyHandler.getCompanyHandler)
 companyRouter.get('/all', companyHandler.getCompaniesHandler)
 companyRouter.post('/create', companyHandler.createCompanyHandler)
+companyRouter.patch('/update', companyHandler.updateCompanyHandler)
 
 export { companyRouter }
