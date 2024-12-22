@@ -10,45 +10,46 @@ interface queryParams {
 }
 
 interface bodyParams extends FindUser {
-    auto_complete?: boolean,
+    auto_complete?: number,
     room_id?: number,
     is_logged_in?: string
 }
 
 const getQueryParams = (body: bodyParams) => {
     const { id, name, company_id, username, auto_complete, room_id, is_logged_in } = body
+    console.log(body)
     const result: queryParams = {}
 
-    if (id) {
-        result.id = id
+    if (Number(id)) {
+        result.id = Number(id)
     }
 
-    if (name && auto_complete) {
+    if (name && Number(auto_complete)) {
         result.name = { contains: name, mode: 'insensitive' }
     }
 
-    if (name && !auto_complete) {
+    if (name && !Number(auto_complete)) {
         result.name = name
     }
 
-    if (username && auto_complete) {
+    if (username && Number(auto_complete)) {
         result.username = { contains: username, mode: 'insensitive' }
     }
 
-    if (username && !auto_complete) {
+    if (username && !Number(auto_complete)) {
         result.username = username
     }
 
-    if (company_id) {
-        result.company_id = company_id
+    if (Number(company_id)) {
+        result.company_id = Number(company_id)
     }
 
-    if (room_id) {
-        result.room_id = room_id
+    if (Number(room_id)) {
+        result.room_id = Number(room_id)
     }
 
-    if (is_logged_in) {
-        result.is_logged_in = is_logged_in === "true" ? true : false
+    if (Number(is_logged_in)) {
+        result.is_logged_in = Boolean(Number(is_logged_in))
     }
 
     return result

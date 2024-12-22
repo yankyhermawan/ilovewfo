@@ -9,7 +9,7 @@ const userAuth = new UserAuth()
 
 export default class UserHandler {
     async getUsersHandler(req: Request, res: Response) {
-        const data = req.body
+        const data = req.query
         formatAndSendResponse(res, () => userService.getUsers(data))
     }
 

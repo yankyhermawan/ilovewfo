@@ -105,7 +105,7 @@ function Main() {
 		}
 
 		const getAllUsers = async () => {
-			const res = await getUsers({ room_id: 1, is_logged_in: true })
+			const res = await getUsers({ room_id: 1, is_logged_in: 1 })
 			setAllUsers(res.data)
 			setAllUsersInRoom(res.data)
 		}
