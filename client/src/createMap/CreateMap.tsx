@@ -98,7 +98,13 @@ const CreateMap = () => {
     }
 
     const handleSubmit = () => {
-        createMap(materialCellData)
+        const data = {
+            name: mapName,
+            entry_point_x: entryX,
+            entry_point_y: entryY,
+            materialCellData
+        }
+        createMap(data)
     }
 
     const handleChangeEntryPoint = (type = '') => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -188,7 +194,7 @@ const CreateMap = () => {
                             {map(new Array(width), (_, key) => <div key={key}>{key}</div>)}
                         </div>}
                     </div>
-                    <Button onClick={handleSubmit} disabled={materialCellData.length !== width*height}/>
+                    <Button onClick={handleSubmit} disabled={materialCellData.length !== width * height || !width || !height || !nextButtonClicked}/>
                 </div>
             </div>
             {!nextButtonClicked && 

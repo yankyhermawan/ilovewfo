@@ -9,3 +9,10 @@ export interface MaterialCellData {
     position: Position
     materialId: number
 }
+
+export interface CreateMapInterface {
+    name: string
+    entry_point_x: number
+    entry_point_y: number
+    materialCellData: MaterialCellData[]
+}

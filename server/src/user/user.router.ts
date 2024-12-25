@@ -12,5 +12,6 @@ userRouter.post('/forgetpassword', userHandler.forgetPasswordHandler)
 userRouter.get('/', userHandler.getUserHandler)
 userRouter.get('/check-token', userHandler.checkTokenValidHandler)
 userRouter.get('/me', userHandler.getMyDataHandler)
+userRouter.get('/logout', userHandler.logoutHandler)
 
 export { userRouter }

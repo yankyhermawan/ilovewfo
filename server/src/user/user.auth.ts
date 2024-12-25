@@ -168,11 +168,26 @@ export default class UserAuth {
         }
     }
 
-    async logout(user_id: number) {
-        await prismaService.user.update({
-            data: { is_logged_in: false },
-            where: { id: user_id }
+    async logout(user_id: number | null): Promise<ResponseInterface> {
+        if (!user_id) {
+            return {
+                status: StatusCodes.BAD_REQUEST,
+                errorMessage: 'Invalid User'
+            }
+        }
+        const res = await prismaService.user.findFirst({
+            where: { id: user_id, is_logged_in: true }
         })
+        if (!res) {
+            return {
+                status: StatusCodes.BAD_REQUEST,
+                errorMessage: 'Current User Already logged out'
+            }
+        }
+        return {
+            status: StatusCodes.OK,
+            message: 'Logout Success'
+        }
     }
 
     async setLogin(user_id: number) {

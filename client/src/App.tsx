@@ -8,7 +8,7 @@ import Login from './login/login'
 import Register from './register/Register'
 import Company from './company/Company'
 import RoomList from './roomList/RoomList'
-import { checkToken } from './login/actions'
+import { checkToken, logout } from './login/actions'
 
 import includes from 'lodash/includes'
 
@@ -40,6 +40,13 @@ const App = () => {
 		if (!isTokenChecked) {
 			checkTokenValid()
 		}
+
+		return (() => {
+			if (token) {
+				const logoutAction = async() => await logout()
+				logoutAction()
+			}
+		})
 	}, [])
 
 	useEffect(() => {
@@ -59,7 +66,7 @@ const App = () => {
 					<Route path='/room/list' Component={RoomList} />
 					<Route path='/login' Component={Login} />
 					<Route path='/register' Component={Register} />
-					<Route path='/create-map' Component={CreateMap} />
+					<Route path='/room/create' Component={CreateMap} />
 					<Route path='/material' Component={Material} />
 					<Route path='/company' Component={Company}/>
 				</Routes>

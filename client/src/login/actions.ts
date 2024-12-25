@@ -21,3 +21,5 @@ export const getMyData = async () => await get(`${BASE_ENDPOINT}/me`)
 export const getUsers = async (data: { room_id: number, is_logged_in: number }) => await get(`${BASE_ENDPOINT}/all`, data)
 
 export const register = async(data: Register) => await post(`${BASE_ENDPOINT}/register`, JSON.stringify(data))
+
+export const logout = async() => await get(`${BASE_ENDPOINT}/logout`)

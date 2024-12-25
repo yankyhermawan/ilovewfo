@@ -46,4 +46,9 @@ export default class UserHandler {
         const { id } = getUserIdFromToken(req)
         formatAndSendResponse(res, () => userService.getMyData(id))
     }
+
+    async logoutHandler(req: Request, res: Response) {
+        const { id } = getUserIdFromToken(req)
+        formatAndSendResponse(res, () => userAuth.logout(id))
+    }
 }
