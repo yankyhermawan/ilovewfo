@@ -1,12 +1,15 @@
 import { FindUser } from './user.interface'
+import { Prisma } from '@prisma/client'
 
 interface queryParams {
     id?: number
     company_id?: number
     name?: string | { contains: string, mode: 'insensitive' }
     username?: string | { contains: string, mode: 'insensitive' },
-    room_id?: number,
     is_logged_in?: boolean
+    user_room?: {
+        some?: Prisma.user_roomWhereInput
+    }
 }
 
 interface bodyParams extends FindUser {
@@ -17,7 +20,6 @@ interface bodyParams extends FindUser {
 
 const getQueryParams = (body: bodyParams) => {
     const { id, name, company_id, username, auto_complete, room_id, is_logged_in } = body
-    console.log(body)
     const result: queryParams = {}
 
     if (Number(id)) {
@@ -45,7 +47,11 @@ const getQueryParams = (body: bodyParams) => {
     }
 
     if (Number(room_id)) {
-        result.room_id = Number(room_id)
+        result.user_room = {
+            some: {
+                room_id: Number(room_id)
+            }
+        }
     }
 
     if (Number(is_logged_in)) {

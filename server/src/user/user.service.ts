@@ -8,7 +8,9 @@ import getQueryParams from './getQueryParams'
 export default class UserService {
     async getUsers(data: FindUser): Promise<ResponseInterface> {
         const response = await prismaService.user.findMany({
-            where: { ...getQueryParams(data) }
+            where: {
+                ...getQueryParams(data)
+            }
         })
         if (isEmpty(response)) {
             return {

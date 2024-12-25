@@ -1,10 +1,10 @@
 export interface MaterialInterface {
-    id?: number
+    height: number
+    id: number
+    image_url: string | ArrayBuffer
+    is_identical: boolean
     name: string
     rotation: number
-    image_url: string | ArrayBuffer
     walkable: boolean
     width: number
-    height: number
-    is_identical: number
 }

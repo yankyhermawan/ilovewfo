@@ -35,17 +35,37 @@ export interface UserPosition {
     src: string
 }
 
-export interface MappedMaterials {
-    image_url: string | ArrayBuffer
-    height: number
-    width: number
-    walkable: boolean
-    position_x: number
-    position_y: number
-}
-
 export interface Map {
     size: number[],
     userPosition: UserPosition[],
-    materials: MappedMaterials[]
+    materials: RenderRoomMaterialInterface[]
+}
+
+export interface RenderRoomMaterialInterface {
+    name: string
+    position_x: number
+    position_y: number
+    image_url: string | ArrayBuffer
+    height: number
+    width: number
+    rotation: number
+    walkable: boolean
+}
+
+export interface RoomInterface {
+    company_id: number
+    entry_point_x: number
+    entry_point_y: number
+    id: number
+    name: string
+    room_material: RoomMaterialInterface[]
+}
+
+interface RoomMaterialInterface {
+    id: number
+    material_id: number
+    position_x: number
+    position_y: number
+    room_id: number
+    material: MaterialInterface
 }

@@ -2,19 +2,26 @@ import { StatusCodes } from 'http-status-codes'
 import { prismaService } from '../prisma.service'
 import { ResponseInterface } from '../utility/response'
 import isEmpty from 'lodash/isEmpty'
-import { CreateMapInterface } from './map.interface'
+import { CreateMapInterface } from './room.interface'
 import map from 'lodash/map'
 
-export default class MapService {
-    async getMap(room_id: number): Promise<ResponseInterface> {
+export default class RoomService {
+    async getRoom(room_id: number): Promise<ResponseInterface> {
         if (!room_id) {
             return {
                 status: StatusCodes.METHOD_NOT_ALLOWED,
                 errorMessage: 'Please Provice a company ID'
             }
         }
-        const res = await prismaService.room_material.findMany({
-            where: { room_id }
+        const res = await prismaService.room.findFirst({
+            where: {
+                id: room_id
+            },
+            include: {
+                room_material: {
+                    include: { material: true }
+                }
+            }
         })
         if (isEmpty(res)) {
             return {
@@ -28,7 +35,7 @@ export default class MapService {
         }
     }
 
-    async createMap(user_id: number, data: CreateMapInterface): Promise<ResponseInterface> {
+    async createRoom(user_id: number, data: CreateMapInterface): Promise<ResponseInterface> {
         const user = await prismaService.user.findFirst({
             where: { id: user_id }
         })
@@ -78,15 +85,40 @@ export default class MapService {
         const res = await prismaService.room_material.createMany({
             data: mappedData
         })
-        if (res) {
+        if (!res) {
             return {
-                status: StatusCodes.CREATED,
-                message: 'Data saved successfully'
+                status: StatusCodes.BAD_GATEWAY,
+                message: 'Something went wrong'
+            }
+        }
+        await prismaService.user_room.create({
+            data: {
+                user_id,
+                room_id: createRoom.id
+            }
+        })
+        return {
+            status: StatusCodes.CREATED,
+            errorMessage: 'Data saved successfully'
+        }
+    }
+
+    async getRooms(user_id: number): Promise<ResponseInterface> {
+        const res = await prismaService.user_room.findMany({
+            where: { user_id },
+            include: {
+                room: true
+            }
+        })
+        if (!res) {
+            return {
+                status: StatusCodes.NOT_FOUND,
+                errorMessage: 'No Rooms Found'
             }
         }
         return {
-            status: StatusCodes.BAD_GATEWAY,
-            errorMessage: 'Something went wrong'
+            status: StatusCodes.OK,
+            data: res
         }
     }
 }

@@ -10,7 +10,6 @@ import map from 'lodash/map'
 import orderBy from 'lodash/orderBy'
 import uniqBy from 'lodash/uniqBy'
 import { io } from 'socket.io-client'
-import { getCompanyMaterials } from '../material/action'
 import { getMyData, getUsers } from '../login/actions'
 import { useEffectAfterMount } from '../utility/customHooks'
 import Input from '../components/Input/Input'
@@ -20,15 +19,18 @@ import moment from 'moment'
 import micOn from '../assets/microphone.svg'
 import micOff from '../assets/mic-mute.svg'
 import { endpoint } from '../utility/constants'
-import { MaterialInterfaceWithPosition, myData, chat, MaterialResponse } from './interface'
+import { MaterialInterfaceWithPosition, myData, chat, RenderRoomMaterialInterface, RoomInterface } from './interface'
 import UserOnline from './UserOnline'
+import { getRoom } from './action'
+import { maxBy } from 'lodash'
 
 const dummyMap = [9, 16]
 
 function Room() {
-	const [currentPosition, setCurrentPosition] = useState<number[]>([1, 1])
+	const [currentPosition, setCurrentPosition] = useState<[number, number]>([0, 0])
 	const [rotation, setRotation] = useState<number>(0)
-	const [materials, setMaterials] = useState<MaterialInterfaceWithPosition[]>([])
+	const [materials, setMaterials] = useState<RenderRoomMaterialInterface[]>([])
+	const [mapSize, setMapSize] = useState<[number, number]>([0, 0])
 	const [myData, setMyData] = useState<Partial<myData>>({})
 	const [message, setMessage] = useState('')
 	const [isTyping, setIsTyping] = useState(false)
@@ -43,16 +45,16 @@ function Room() {
 	}
 
 	const walk = (dir = '') => {
-		if (dir === 'up') {
-			const nextPosition = [currentPosition[0], currentPosition[1] - 1]
+		if (dir === 'down') {
+			const nextPosition: [number, number] = [currentPosition[0], currentPosition[1] - 1]
 			if (nextPosition[1] >= 0
 				&& isAbleToMove(nextPosition)
 			) {
 				setCurrentPosition(nextPosition)
 			}
 		}
-		if (dir === 'down') {
-			const nextPosition = [currentPosition[0], currentPosition[1] + 1]
+		if (dir === 'up') {
+			const nextPosition: [number, number] = [currentPosition[0], currentPosition[1] + 1]
 			if (currentPosition[1] + 1 < dummyMap[1]
 				&& isAbleToMove(nextPosition)
 			) {
@@ -60,7 +62,7 @@ function Room() {
 			}
 		}
 		if (dir === 'left') {
-			const nextPosition = [currentPosition[0] - 1, currentPosition[1]]
+			const nextPosition: [number, number] = [currentPosition[0] - 1, currentPosition[1]]
 			if (currentPosition[0] - 1 >= 0
 				&& isAbleToMove(nextPosition)
 			) {
@@ -68,7 +70,7 @@ function Room() {
 			}
 		}
 		if (dir === 'right') {
-			const nextPosition = [currentPosition[0] + 1, currentPosition[1]]
+			const nextPosition: [number, number] = [currentPosition[0] + 1, currentPosition[1]]
 			if (nextPosition[0] < dummyMap[0]
 				&& isAbleToMove(nextPosition)
 			) {
@@ -79,26 +81,29 @@ function Room() {
 
 	useEffect(() => {
 		const getData = async () => {
-			const res = await getCompanyMaterials({ id: 1 })
-			const resData: MaterialResponse[] = res.data
-			const materialRes: MaterialInterfaceWithPosition[] = []
-			map(resData, dt => {
-				const { company_material, image_url, height, width, walkable, name, rotation, is_identical } = dt
-				map(company_material, mat => {
-					materialRes.push({
-						name,
-						rotation,
-						is_identical,
-						image_url,
-						height,
-						width,
-						walkable,
-						position_x: mat.position_x,
-						position_y: mat.position_y
-					})
+			const res = await getRoom(Number(room_id))
+			const resData: RoomInterface = res.data
+			const { room_material = [], name, entry_point_x, entry_point_y } = resData
+			const orderedByPosition = orderBy(room_material, ['position_x', 'position_y'], ['desc', 'desc'])
+			const maxX = orderedByPosition[0].position_x + 1
+			const maxY = orderedByPosition[0].position_y + 1
+			setMapSize([maxX, maxY])
+			setCurrentPosition([entry_point_x, entry_point_y])
+			const roomMaterial = map(room_material, dt => {
+				const { material, position_x, position_y } = dt
+				const { image_url, height, width, rotation, walkable } = material
+				return ({
+					name,
+					position_x,
+					position_y,
+					image_url,
+					height,
+					width,
+					rotation,
+					walkable
 				})
 			})
-			setMaterials(materialRes)
+			setMaterials(roomMaterial)
 		}
 		const getMe = async () => {
 			const res = await getMyData()
@@ -320,7 +325,7 @@ function Room() {
 			</div>
 			<div className='flex flex-col justify-between'>
 				<div className='flex flex-col'>
-					{renderMap({ size: [5, 5], userPosition: [{ id: 1, x: 2, y: 3, src: person }], materials })}
+					{renderMap({ size: mapSize, userPosition: [{ id: 1, x: currentPosition[0], y: currentPosition[1], src: person }], materials })}
 				</div>
 				<div
 					className={`w-fit h-max p-4 border border-black border-solid rounded-full ${isMicOn ? 'bg-blue-400/75' : 'bg-red-300'}`}

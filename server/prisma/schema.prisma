@@ -93,7 +93,7 @@ model room {
   entry_point_y Int @default(0)
   company_id Int
   company company @relation(fields: [company_id], references: [id])
-  room room_material[]
+  room_material room_material[]
   user_room user_room[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt @default(now())

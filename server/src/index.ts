@@ -3,7 +3,7 @@ import cors from 'cors'
 import { userRouter } from './user/user.router'
 import { companyRouter } from './company/company.router'
 import { materialRouter } from './material/material.router'
-import { mapRouter } from './map/map.router'
+import { roomRouter } from './room/room.router'
 import { createServer } from 'http'
 import initSocket from './socket/socket.router'
 
@@ -20,7 +20,7 @@ initSocket(server)
 app.use('/user', userRouter)
 app.use('/company', companyRouter)
 app.use('/material', materialRouter)
-app.use('/map', mapRouter)
+app.use('/room', roomRouter)
 server.listen(port, () => {
     console.log(`Listening on ${port}`)
 })
