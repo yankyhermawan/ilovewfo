@@ -3,6 +3,7 @@ import UserService from './user.service'
 import { formatAndSendResponse } from '../utility/response'
 import UserAuth from './user.auth'
 import { checkTokenValid, getUserIdFromToken } from './user.guard'
+import { getPagination } from '../utility/common'
 
 const userService = new UserService()
 const userAuth = new UserAuth()
@@ -10,7 +11,8 @@ const userAuth = new UserAuth()
 export default class UserHandler {
     async getUsersHandler(req: Request, res: Response) {
         const data = req.query
-        formatAndSendResponse(res, () => userService.getUsers(data))
+        const pagination = getPagination(req)
+        formatAndSendResponse(res, () => userService.getUsers(data, pagination))
     }
 
     async getUserHandler(req: Request, res: Response) {

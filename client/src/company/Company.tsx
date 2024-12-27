@@ -19,7 +19,7 @@ const Company = () => {
     }
 
     const handleGetData = async () => {
-        const res = await getCompany({ user_id: 2 })
+        const res = await getCompany({ is_author: 1 })
         if (res.data) {
             setCompanyData(res.data)
             setDefaultCompanyData(res.data)

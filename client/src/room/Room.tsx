@@ -19,12 +19,11 @@ import moment from 'moment'
 import micOn from '../assets/microphone.svg'
 import micOff from '../assets/mic-mute.svg'
 import { endpoint } from '../utility/constants'
-import { MaterialInterfaceWithPosition, myData, chat, RenderRoomMaterialInterface, RoomInterface } from './interface'
+import { myData, chat, RenderRoomMaterialInterface, RoomInterface } from './interface'
 import UserOnline from './UserOnline'
 import { getRoom } from './action'
-import { maxBy } from 'lodash'
-
-const dummyMap = [9, 16]
+import Invite from './Invite'
+import { getCompany } from '../company/action'
 
 function Room() {
 	const [currentPosition, setCurrentPosition] = useState<[number, number]>([0, 0])
@@ -38,6 +37,7 @@ function Room() {
 	const [allUsers, setAllUsers] = useState<myData[]>([])
 	const [isMicOn, setIsMicOn] = useState(false)
 	const [allUsersInRoom, setAllUsersInRoom] = useState<myData[]>([])
+	const [companyId, setCompanyId] = useState<number | null>(null)
 	const { id: room_id } = useParams()
 	const socket = io(endpoint)
 	const isAbleToMove = (nextPosition: number[]) => {
@@ -55,7 +55,7 @@ function Room() {
 		}
 		if (dir === 'up') {
 			const nextPosition: [number, number] = [currentPosition[0], currentPosition[1] + 1]
-			if (currentPosition[1] + 1 < dummyMap[1]
+			if (currentPosition[1] + 1 < mapSize[1]
 				&& isAbleToMove(nextPosition)
 			) {
 				setCurrentPosition(nextPosition)
@@ -71,7 +71,7 @@ function Room() {
 		}
 		if (dir === 'right') {
 			const nextPosition: [number, number] = [currentPosition[0] + 1, currentPosition[1]]
-			if (nextPosition[0] < dummyMap[0]
+			if (nextPosition[0] < mapSize[0]
 				&& isAbleToMove(nextPosition)
 			) {
 				setCurrentPosition(nextPosition)
@@ -115,9 +115,17 @@ function Room() {
 			setAllUsers(res.data)
 			setAllUsersInRoom(res.data)
 		}
+
+		const handleGetCompany = async () => {
+			const res = await getCompany({ is_author: 1 })
+			if (res.data) {
+				setCompanyId(res.data.id)
+			}
+		}
 		getData()
 		getMe()
 		getAllUsers()
+		handleGetCompany()
 	}, [])
 
 	useEffectAfterMount(() => {
@@ -263,7 +271,7 @@ function Room() {
 				setRotation(rotation[direction as keyof typeof rotation])
 				timeoutId = setTimeout(() => {
 					walk(direction)
-				}, 50, 'abc')
+				}, 100)
 			}
 		}
 
@@ -319,9 +327,14 @@ function Room() {
 
 	return (
 		<div className='w-screen h-screen flex flex-row justify-center'>
-			<div className='absolute w-48 bg-black/50 top-0 left-0 flex flex-col justify-start p-4 gap-4'>
-				<div>User in this room</div>
-				<UserOnline data={allUsersInRoom} />
+			<div className='flex flex-row left-0 absolute'>
+				<div className='w-48 bg-black/50 top-0 left-0 flex flex-col justify-start p-4 gap-4'>
+					<div>User in this room</div>
+					<UserOnline data={allUsersInRoom} />
+				</div>
+				{companyId && <div className='w-72 bg-black/50 top-0 left-0 flex flex-col justify-start p-4 gap-4'>
+					<Invite setIsTyping={setIsTyping} isTyping={isTyping} />
+				</div>}
 			</div>
 			<div className='flex flex-col justify-between'>
 				<div className='flex flex-col'>

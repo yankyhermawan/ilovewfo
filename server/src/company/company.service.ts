@@ -12,8 +12,21 @@ export default class CompanyService {
                 errorMessage: 'Please provide a company name'
             }
         }
+        const checkUser = await prismaService.user.findUnique({
+            where: { id: data.user_id, company_id: null }
+        })
+        if (!checkUser) {
+            return {
+                status: StatusCodes.BAD_REQUEST,
+                errorMessage: 'User Already Has Company'
+            }
+        }
         const response = await prismaService.company.create({
             data: { ...data }
+        })
+        await prismaService.user.update({
+            data: { is_author: true },
+            where: { id: checkUser.id }
         })
         if (response) {
             return {

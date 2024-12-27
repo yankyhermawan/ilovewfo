@@ -4,10 +4,12 @@ import { ResponseInterface } from '../utility/response'
 import { StatusCodes } from 'http-status-codes'
 import isEmpty from 'lodash/isEmpty'
 import getQueryParams from './getQueryParams'
+import { Pagination } from '../utility/common'
 
 export default class UserService {
-    async getUsers(data: FindUser): Promise<ResponseInterface> {
+    async getUsers(data: FindUser, pagination: Partial<Pagination>): Promise<ResponseInterface> {
         const response = await prismaService.user.findMany({
+            ...pagination,
             where: {
                 ...getQueryParams(data)
             }

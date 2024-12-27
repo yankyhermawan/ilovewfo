@@ -14,7 +14,11 @@ export default class CompanyHandler {
     }
 
     async getCompanyHandler(req: Request, res: Response) {
+        const { id } = getUserIdFromToken(req)
         const data = req.query
+        if (!data.user_id) {
+            data.user_id = String(id)
+        }
         formatAndSendResponse(res, () => companyService.getCompany(data))
     }
 

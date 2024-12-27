@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes'
 import { prismaService } from '../prisma.service'
 import { ResponseInterface } from '../utility/response'
 import isEmpty from 'lodash/isEmpty'
-import { CreateMapInterface } from './room.interface'
+import { CreateMapInterface, InviteUsers } from './room.interface'
 import map from 'lodash/map'
 
 export default class RoomService {
@@ -46,7 +46,11 @@ export default class RoomService {
             }
         }
         const company = await prismaService.company.findFirst({
-            where: { user_id: user_id }
+            where: {
+                user: {
+                    some: { id: user_id }
+                }
+            }
         })
         if (!company) {
             return {
@@ -119,6 +123,53 @@ export default class RoomService {
         return {
             status: StatusCodes.OK,
             data: res
+        }
+    }
+
+    async inviteUsers(data: InviteUsers): Promise<ResponseInterface> {
+        if (!data.user_id) {
+            return {
+                status: StatusCodes.BAD_REQUEST,
+                errorMessage: 'Please Provide User'
+            }
+        }
+        if (!data.room_id) {
+            return {
+                status: StatusCodes.BAD_REQUEST,
+                errorMessage: 'Please Provide Room'
+            }
+        }
+        const room = await prismaService.room.findUnique({
+            where: { id: data.room_id }
+        })
+        if (!room) {
+            return {
+                status: StatusCodes.NOT_FOUND,
+                errorMessage: 'Room Not Found'
+            }
+        }
+        const user = await prismaService.user.findUnique({
+            where: {
+                id: data.user_id,
+                company_id: null
+            }
+        })
+        if (!user) {
+            return {
+                status: StatusCodes.NOT_FOUND,
+                errorMessage: 'User Not Found'
+            }
+        }
+        await prismaService.user_room.create({
+            data
+        })
+        await prismaService.user.update({
+            data: { company_id: room.company_id, is_author: false },
+            where: { id: user.id }
+        })
+        return {
+            status: StatusCodes.CREATED,
+            message: 'User Invited'
         }
     }
 }

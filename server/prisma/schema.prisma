@@ -24,8 +24,9 @@ model user {
   is_logged_in Boolean @default(false)
   user_character user_character[]
   otp otp[]
-  company_id Int?
-  company company?
+  company_id Int? 
+  company company? @relation(fields: [company_id], references: [id])
+  is_author Boolean @default(false)
   user_room user_room[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt @default(now())
@@ -53,8 +54,7 @@ model user_character {
 model company {
   id Int @id @default(autoincrement())
   name String
-  user_id Int @unique
-  user user @relation(fields: [user_id], references: [id])
+  user user[]
   room room[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt @default(now())

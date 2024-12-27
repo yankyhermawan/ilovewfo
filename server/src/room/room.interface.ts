@@ -24,3 +24,8 @@ export interface MaterialCellData {
     position: Position
     materialId: number
 }
+
+export interface InviteUsers {
+    user_id: number
+    room_id: number
+}

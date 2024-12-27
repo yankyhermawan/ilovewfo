@@ -18,7 +18,8 @@ export interface FindUser {
     id?: number
     username?: string
     name?: string,
-    company_id?: number
+    company_id?: number | string
+    limit?: number
 }
 
 export interface LoginUser {

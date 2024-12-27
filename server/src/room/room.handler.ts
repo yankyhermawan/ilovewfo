@@ -21,4 +21,9 @@ export default class RoomHandler {
         const { id } = getUserIdFromToken(req)
         formatAndSendResponse(res, () => roomService.getRooms(Number(id)))
     }
+
+    async inviteUserHandler(req: Request, res: Response) {
+        const data = req.body
+        formatAndSendResponse(res, () => roomService.inviteUsers(data))
+    }
 }

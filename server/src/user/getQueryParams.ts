@@ -3,9 +3,10 @@ import { Prisma } from '@prisma/client'
 
 interface queryParams {
     id?: number
-    company_id?: number
+    company_id?: number | null
     name?: string | { contains: string, mode: 'insensitive' }
     username?: string | { contains: string, mode: 'insensitive' },
+    email?: string | { contains: string, mode: 'insensitive' }
     is_logged_in?: boolean
     user_room?: {
         some?: Prisma.user_roomWhereInput
@@ -15,11 +16,12 @@ interface queryParams {
 interface bodyParams extends FindUser {
     auto_complete?: number,
     room_id?: number,
-    is_logged_in?: string
+    is_logged_in?: string,
+    email?: string
 }
 
 const getQueryParams = (body: bodyParams) => {
-    const { id, name, company_id, username, auto_complete, room_id, is_logged_in } = body
+    const { id, name, company_id, username, auto_complete, room_id, is_logged_in, email } = body
     const result: queryParams = {}
 
     if (Number(id)) {
@@ -46,6 +48,10 @@ const getQueryParams = (body: bodyParams) => {
         result.company_id = Number(company_id)
     }
 
+    if (company_id === 'null') {
+        result.company_id = null
+    }
+
     if (Number(room_id)) {
         result.user_room = {
             some: {
@@ -56,6 +62,17 @@ const getQueryParams = (body: bodyParams) => {
 
     if (Number(is_logged_in)) {
         result.is_logged_in = Boolean(Number(is_logged_in))
+    }
+
+    if (email && Number(auto_complete)) {
+        result.email = {
+            contains: email,
+            mode: 'insensitive'
+        }
+    }
+
+    if (email && !Number(auto_complete)) {
+        result.email = email
     }
 
     return result

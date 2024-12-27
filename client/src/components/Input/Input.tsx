@@ -33,7 +33,7 @@ const Input = (props: InputInterface) => {
             </label>
             <div className="relative w-full">
                 <input
-                    className={`w-full p-2 pr-10 border border-black border-solid rounded-lg focus:bg-slate-100 ${disabledClassName}`}
+                    className={`w-full p-2 border border-black border-solid rounded-lg focus:bg-slate-100 ${disabledClassName}`}
                     disabled={disabled}
                     id={id}
                     maxLength={maxLength}

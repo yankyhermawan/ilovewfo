@@ -4,6 +4,6 @@ export interface SelectInterface {
     label?: string
     onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void
     value?: number | undefined
-    options?: { label: string, value: string, disabled?: boolean }[]
+    options?: { label: string, value: string | number, disabled?: boolean }[]
     disabledPlaceholder?: string[]
 }

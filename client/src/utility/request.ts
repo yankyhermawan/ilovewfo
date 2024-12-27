@@ -3,7 +3,7 @@ import notification from '../components/notification'
 
 const token = localStorage.getItem('token')
 
-export const get = async (prefix: string, data?: Record<string, any>) => {
+export const get = async (prefix: string, data?: Record<string, any>, notif?: boolean) => {
     try {
         const queryString = data
             ? `?${new URLSearchParams(data).toString()}`
@@ -15,7 +15,7 @@ export const get = async (prefix: string, data?: Record<string, any>) => {
             }
         })
         const jsonData = await res.json()
-        if (jsonData.error) {
+        if (jsonData.error && notif) {
             notification({
                 code: res.status,
                 msg: jsonData.error

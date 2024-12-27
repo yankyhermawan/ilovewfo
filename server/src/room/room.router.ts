@@ -7,5 +7,6 @@ const roomHandler = new RoomHandler()
 roomRouter.post('/create', roomHandler.createHandler)
 roomRouter.get('/all', roomHandler.getRoomsHandler)
 roomRouter.get('/', roomHandler.getRoomHandler)
+roomRouter.post('/invite', roomHandler.inviteUserHandler)
 
 export { roomRouter }
